@@ -154,6 +154,7 @@
     <ClCompile Include="rooms.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="rules.cpp" />
+    <ClCompile Include="sqlite3.c" />
     <ClCompile Include="textbooks.cpp" />
     <ClCompile Include="validation.cpp" />
   </ItemGroup>
@@ -169,6 +170,7 @@
     <ClInclude Include="menu.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="rules.h" />
+    <ClInclude Include="sqlite3.h" />
     <ClInclude Include="textbooks.h" />
     <ClInclude Include="validation.h" />
   </ItemGroup>

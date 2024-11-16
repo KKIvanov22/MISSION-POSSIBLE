@@ -992,7 +992,6 @@ void biology()
     Model skeleton = LoadModel("objects/skeleton.obj");
     Model laptop = LoadModel("objects/laptop.obj");
     Model book = LoadModel("objects/book.obj");
-    Model poster = LoadModel("objects/poster.obj");
 
     Texture2D wood = LoadTexture("Textures/wood.png");
     Texture2D Musculoskeletal = LoadTexture("Textures/Musculoskeletal.png");
@@ -1049,7 +1048,7 @@ void biology()
         cameraBox.min = camera.position;
         cameraBox.max = camera.position;
 
-
+		DrawBillboard(camera, wood, { 0.0f, 6.0f, 9.0f }, 2.0f, WHITE);
         DrawPlane({ 0.0f, 0.0f, 0.0f }, { 19.0f, 19.0f }, LIGHTGRAY);
         DrawCube({ -10.0f, 2.5f, 0.0f }, 1.0f, 8.3f, 21.0f, PINK);
         DrawCube({ 10.0f, 2.5f, 0.0f }, 1.0f, 8.3f, 21.0f, PINK);

@@ -1,76 +1,69 @@
 #include "validation.h"
+#include "sqlite3.h"
+#include <algorithm>
+#include <cctype>
 
-// Check if an account with the given username exists in the accounts file.
-const bool Validate::doesAccountExist(const string& targetUsername) {
-    ifstream file("../data/accounts.csv"); // Open the accounts file
-    string line;
-    string storedUsername;
-    while (getline(file, line)) { // Read each line in the file
-        istringstream iss(line);
-        if (getline(iss, storedUsername, ',')) { // Extract the stored username from the line
-            if (storedUsername == targetUsername) { // Compare stored username with target username
-                cout << storedUsername; // Output the stored username (for debugging)
-                return true; // Return true if the target username matches any stored username
-            }
-        }
+// Check if an account with the given username exists in the accounts database.
+const bool Validate::doesAccountExist(const std::string& targetUsername) {
+    sqlite3* db;
+    sqlite3_open("../data/accounts.db", &db);
+
+    std::string sql = "SELECT username FROM accounts WHERE username = ?";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+    sqlite3_bind_text(stmt, 1, targetUsername.c_str(), -1, SQLITE_STATIC);
+
+    bool exists = false;
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        exists = true;
     }
-    return false; // Return false if the target username is not found
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    return exists;
 }
 
 // Check if the given password matches the password associated with the given username.
-const bool Validate::isPasswordCorrect(const string& targetUsername, const string& targetPassword) {
-    ifstream file("../data/accounts.csv"); // Open the accounts file
-    string line;
+const bool Validate::isPasswordCorrect(const std::string& targetUsername, const std::string& targetPassword) {
+    sqlite3* db;
+    sqlite3_open("../data/accounts.db", &db);
 
-    while (getline(file, line)) { // Read each line in the file
-        istringstream iss(line);
-        string storedUsername, storedPassword;
+    std::string sql = "SELECT password FROM accounts WHERE username = ?";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+    sqlite3_bind_text(stmt, 1, targetUsername.c_str(), -1, SQLITE_STATIC);
 
-        if (getline(iss, storedUsername, ',') && getline(iss, storedPassword, ',')) {
-            if (storedUsername == targetUsername && storedPassword == targetPassword) {
-                return true; // Return true if the target username and password match any stored pair
-            }
+    bool correct = false;
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        std::string storedPassword = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        if (storedPassword == targetPassword) {
+            correct = true;
         }
     }
-    return false; // Return false if the target username and password are not found
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    return correct;
 }
 
-// Check if the password contains at least one uppercase letter.
-bool Validate::containsUppercase(const string& password) {
-    for (size_t i = 0; i < password.length(); ++i) { // Loop through each character in the password
-        if (password[i] >= 'A' && password[i] <= 'Z') { // Check if the character is an uppercase letter
-            return true; // Return true if an uppercase letter is found
-        }
-    }
-    return false; // Return false if no uppercase letter is found
+// Check if the string contains any special characters.
+bool Validate::containsSpecial(const std::string& str) {
+    return std::any_of(str.begin(), str.end(), [](unsigned char c) {
+        return !std::isalnum(c);
+        });
 }
 
-// Check if the password contains at least one lowercase letter.
-bool Validate::containsLowercase(const string& password) {
-    for (size_t i = 0; i < password.length(); ++i) { // Loop through each character in the password
-        if (password[i] >= 'a' && password[i] <= 'z') { // Check if the character is a lowercase letter
-            return true; // Return true if a lowercase letter is found
-        }
-    }
-    return false; // Return false if no lowercase letter is found
+// Check if the string contains any digits.
+bool Validate::containsDigit(const std::string& str) {
+    return std::any_of(str.begin(), str.end(), ::isdigit);
 }
 
-// Check if the password contains at least one digit.
-bool Validate::containsDigit(const string& password) {
-    for (size_t i = 0; i < password.length(); ++i) { // Loop through each character in the password
-        if (password[i] >= '0' && password[i] <= '9') { // Check if the character is a digit
-            return true; // Return true if a digit is found
-        }
-    }
-    return false; // Return false if no digit is found
+// Check if the string contains any lowercase letters.
+bool Validate::containsLowercase(const std::string& str) {
+    return std::any_of(str.begin(), str.end(), ::islower);
 }
 
-// Check if the password contains at least one special character.
-bool Validate::containsSpecial(const string& password) {
-    for (size_t i = 0; i < password.length(); ++i) { // Loop through each character in the password
-        if (!(isalnum(password[i]))) { // Check if the character is not alphanumeric
-            return true; // Return true if a special character is found
-        }
-    }
-    return false; // Return false if no special character is found
+// Check if the string contains any uppercase letters.
+bool Validate::containsUppercase(const std::string& str) {
+    return std::any_of(str.begin(), str.end(), ::isupper);
 }
