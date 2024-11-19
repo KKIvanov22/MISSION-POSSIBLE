@@ -2,6 +2,8 @@
 #include "textbooks.h"
 #include "exams.h"
 #include "map.h"
+#include "whiteboard.h"
+
 void drawCoordinates(Camera& camera)
 {
     string positionString = "Camera Position: (" +
@@ -297,16 +299,19 @@ void maths()
     int seconds = 0;
 
     bool timerIsZero = false;
-
+    Vector3 previousCameraPosition = camera.position;
     // Main game loop
     while (!WindowShouldClose())
     {
-        Vector3 previousCameraPosition = camera.position;
+        previousCameraPosition = camera.position;
         UpdateCamera(&camera, cameraMode);
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
-
+        if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_N))
+        {
+			whiteboard::whiteboard();
+        }
         BeginMode3D(camera);
 
         cameraBox.min = camera.position;
@@ -482,7 +487,9 @@ void history()
 
         EndDrawing();
         if (IsKeyPressed(KEY_M))
-            initMap(2);
+        {
+            break;
+        }
     }
     SetExitKey(KEY_EIGHT);
     EnableCursor();
@@ -569,7 +576,9 @@ void physics()
 
         EndMode3D();
         if (IsKeyPressed(KEY_M))
-            initMap(2);
+        {
+            break;
+        }
         elapsedTime += GetFrameTime();
 
         if (elapsedTime >= updateInterval) {
@@ -724,7 +733,7 @@ void literature()
         if (IsKeyPressed(KEY_M))
         {
 
-            initMap(2);
+            break;
         }
 
         DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
@@ -848,8 +857,7 @@ void chemistry()
         DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
         if (IsKeyPressed(KEY_M))
         {
-
-            initMap(2);
+            break;
         }
 
         DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
@@ -970,7 +978,9 @@ void english()
             englishExaminationAlert();
         }
         if (IsKeyPressed(KEY_M))
-            initMap(2);
+        {
+            break;
+        }
 
         DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
 
@@ -1087,7 +1097,9 @@ void biology()
             biologyExaminationAlert();
         }
         if (IsKeyPressed(KEY_M))
-            initMap(2);
+        {
+            break;
+        }
         EndDrawing();
     }
     SetExitKey(KEY_EIGHT);
@@ -1214,7 +1226,7 @@ void geography()
 
         if (IsKeyPressed(KEY_M))
         {
-            initMap(2);
+            break;
         }
 
         DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
@@ -1333,7 +1345,7 @@ void programming()
         DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
         if (IsKeyPressed(KEY_M))
         {
-            initMap(2);
+            break;
         }
 
         DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
@@ -1426,7 +1438,9 @@ void physyicaEducation()
         DrawModel(basketballHoop, { -12.0f, -2.0f, 0.0f }, 10.0, WHITE);
 
         if (IsKeyPressed(KEY_M))
-            initMap(2);
+        {
+            break;
+        }
 
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
         if (!collisionsModelToModel(ballPosition, { 34.0f, 0.2f, 0.0f }, ballBox, goalBox))
