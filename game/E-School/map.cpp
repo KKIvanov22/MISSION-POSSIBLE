@@ -4,6 +4,7 @@
 void initMap(int character)
 {
 	EndMode3D();
+	break;
 	const int screenWidth = 1920;
 	const int screenHeight = 975;
 	float studentX = 200;
@@ -353,7 +354,7 @@ void initMap(int character)
 		if (IsKeyPressed(KEY_ESCAPE))
 		{
 			EnableCursor();
-			menu();
+			break;
 		}
 		EndDrawing();
 		if (studentX < 20)

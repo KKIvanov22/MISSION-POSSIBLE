@@ -351,7 +351,7 @@ void maths()
         if (IsKeyPressed(KEY_M))
         {
 
-            initMap(2);
+            break;
         }
 
         DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
