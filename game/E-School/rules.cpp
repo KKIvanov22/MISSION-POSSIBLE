@@ -13,10 +13,10 @@ void rules() {
     const Rectangle controlsButton = { (GetScreenWidth() / 2) - 40, (GetScreenHeight() / 3) + 42, 310, 100 };
 
     SetExitKey(KEY_ESCAPE); // Set ESC key to exit
-
+    Vector2 mousePosition = GetMousePosition();
     // Main loop for rules screen
     while (!WindowShouldClose()) {
-        Vector2 mousePosition = GetMousePosition(); // Get mouse position
+        mousePosition = GetMousePosition(); // Get mouse position
 
         BeginDrawing(); // Begin drawing
 
@@ -74,10 +74,10 @@ void howToPlay() {
 
 void controls() {
     SetExitKey(KEY_ESCAPE); // Set ESC key to exit
-
+    Vector2 mousePosition = GetMousePosition();
     // Main loop for controls screen
     while (!WindowShouldClose()) {
-        Vector2 mousePosition = GetMousePosition(); // Get mouse position
+        mousePosition = GetMousePosition(); // Get mouse position
 
         BeginDrawing(); // Begin drawing
         ClearBackground(GRAY); // Clear the background

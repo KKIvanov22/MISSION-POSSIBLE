@@ -244,8 +244,6 @@ void shootBasketball(Camera camera, Vector3& ballPosition, float& potentialKickX
     }
 }
 
-
-
 void maths()
 {
     Model chair = LoadModel("objects/chair.obj");
@@ -273,6 +271,12 @@ void maths()
     camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
 
     int cameraMode = CAMERA_FIRST_PERSON;
+    Camera staticCamera = { 0 };
+    staticCamera.fovy = 5.0f;
+    staticCamera.position = { 0.261261,2,-2.52176 };
+    staticCamera.projection = 0;
+    staticCamera.target = { 0.529181,2.7501,-10.0623 };
+    staticCamera.up = { 0,1,0 };
 
     BoundingBox wallBox;
     wallBox.min = { -9.0f, 0.0f, -9.0f };
@@ -301,6 +305,7 @@ void maths()
     bool timerIsZero = false;
     Vector3 previousCameraPosition = camera.position;
     // Main game loop
+    Texture2D draw = { 0 };
     while (!WindowShouldClose())
     {
         previousCameraPosition = camera.position;
@@ -310,10 +315,14 @@ void maths()
         ClearBackground(RAYWHITE);
         if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_N))
         {
-			whiteboard::whiteboard();
+            draw = whiteboard::whiteboard();
         }
         BeginMode3D(camera);
-
+        DrawBillboard(staticCamera, draw, { 0.0f, 3.5f, -9.0f }, 2.0f, WHITE);
+		if (IsKeyPressed(KEY_B))
+		{
+			cout << camera.fovy << endl << camera.position.x << "," << camera.position.y << "," << camera.position.z << endl << camera.projection << endl << camera.target.x << "," << camera.target.y << "," << camera.target.z << endl << camera.up.x << "," << camera.up.y << "," << camera.up.z << endl;
+		}
         cameraBox.min = camera.position;
         cameraBox.max = camera.position;
 
