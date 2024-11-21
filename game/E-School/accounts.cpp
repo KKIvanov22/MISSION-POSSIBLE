@@ -125,6 +125,7 @@ void signup()
                     account.addAccount(username, password);
                     strcpy_s(currentUser, username);
                     menu();
+                    break;
                 }
                 else {
                     // Password does not meet requirements, handle accordingly
@@ -240,6 +241,7 @@ void login() {
             if (validator.doesAccountExist(username) && validator.isPasswordCorrect(username, password)) {
                 strcpy_s(currentUser, username);
                 menu();
+                break;
             }
             else
             {
@@ -255,6 +257,7 @@ void login() {
 
         ClearBackground(RAYWHITE);
         DrawTexture(background, 0, 0, WHITE);
+
         DrawText("Welcome back! Log in!", GetScreenWidth() / 2 + 285, GetScreenHeight() / 2 - 275, 50, BLACK);
 
         DrawRectangleLines(usernameBox.x, usernameBox.y, usernameBox.width, usernameBox.height, (mouseOnUsername ? PINK : BLACK));

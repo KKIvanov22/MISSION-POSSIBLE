@@ -216,8 +216,8 @@ void menu() {
 			DrawText("Exit", screenWidth / 2 + 365, screenHeight / 2 + 62, 25, WHITE);
 			// Handle click with the mouse over button
 			if (isMouseOverButtonGrades && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-				CloseWindow();
-				return;
+				
+				break;
 			}
 		}
 		if (showParticle == 1)

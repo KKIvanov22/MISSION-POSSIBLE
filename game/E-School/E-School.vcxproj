@@ -167,6 +167,7 @@
     <ClInclude Include="games.h" />
     <ClInclude Include="gradeBook.h" />
     <ClInclude Include="map.h" />
+    <ClInclude Include="nbnet.h" />
     <ClInclude Include="rooms.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="pch.h" />
