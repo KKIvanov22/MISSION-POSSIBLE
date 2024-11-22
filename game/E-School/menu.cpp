@@ -4,6 +4,11 @@
 #include "characterSelect.h"
 #include "gradeBook.h"
 
+asio::io_context io_context;
+LANServer* server = nullptr;
+LANClient* client = nullptr;
+std::thread io_thread;
+
 void menu() {
 	// Set mouse cursor
 	SetMouseCursor(MOUSE_CURSOR_DEFAULT);
@@ -65,6 +70,15 @@ void menu() {
 	int i = 0;
 	int particleCount = 1;
 	std::vector<Particle> particles;
+
+	std::thread io_thread; 
+	std::string server_code;
+	int port = 12345;
+
+	std::string serverCode;
+	bool showServerCodeInput = false;
+	const Rectangle serverCodeBox = { (screenWidth / 2) - 100, (screenHeight / 2) - 50, 200, 50 };
+
 	while (!WindowShouldClose())
 	{
 		BeginDrawing();
@@ -180,24 +194,63 @@ void menu() {
 			DrawTexture(molecual, 1200 - molecualX, 100 + molecualY, WHITE);
 			DrawTexture(bus, 1400 - busX, 550, WHITE);
 			Vector2 mousePosition = GetMousePosition();
-			// Check if mouse is hovering the specific button
-			bool isMouseOverButtonStart = CheckCollisionPointRec(mousePosition, startButton);
-			// Set new colors for hovering the button and draw text
+			
 
-			DrawRectangleRounded(startButton, 10, 10, (isMouseOverButtonStart ? PINK : LIGHTGRAY));
+			DrawRectangleRounded(startButton, 10, 10, (CheckCollisionPointRec(mousePosition, startButton) ? PINK : LIGHTGRAY));
 			DrawText("Start", (screenWidth / 2) - 335, (screenHeight / 2) + 62, 25, WHITE);
-			if (isMouseOverButtonStart && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+			if (CheckCollisionPointRec(mousePosition, startButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 				showParticle = 1;
 			}
 
-			// Check if mouse is hovering the specific button
-			bool isMouseOverButtonRules = CheckCollisionPointRec(mousePosition, rulesButton);
-			// Set new colors for hovering the button and draw 
-			DrawRectangleRounded(rulesButton, 10, 10, (isMouseOverButtonRules ? PINK : LIGHTGRAY));
+			DrawRectangleRounded(rulesButton, 10, 10, (CheckCollisionPointRec(mousePosition, rulesButton) ? PINK : LIGHTGRAY));
 			DrawText("Rules", screenWidth / 2 - 100, screenHeight / 2 + 62, 25, WHITE);
 			// Handle click with the mouse over button
-			if (isMouseOverButtonRules && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-				rules();
+			if (CheckCollisionPointRec(GetMousePosition(), rulesButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+				if (!server) {
+					server = new LANServer(io_context, port);
+					server->start();
+					server_code = server->getServerCode();
+					std::cout << "Hosting server with code: " << server_code << std::endl;
+
+					io_thread = std::thread([&]() { io_context.run(); });
+				}
+			}
+
+			// Open server code input box when pressing 'Connect'
+			if (IsKeyPressed(KEY_C)) {
+				showServerCodeInput = true;
+			}
+
+			// Draw server code input box if required
+			if (showServerCodeInput) {
+				DrawRectangleRec(serverCodeBox, LIGHTGRAY);
+				DrawText(serverCode.c_str(), serverCodeBox.x + 5, serverCodeBox.y + 15, 20, BLACK);
+
+				// Handle server code input
+				int key = GetCharPressed();
+				while (key > 0) {
+					if ((key >= 32) && (key <= 125) && (serverCode.length() < 4)) {
+						serverCode += static_cast<char>(key);
+					}
+					key = GetCharPressed();
+				}
+
+				if (IsKeyPressed(KEY_BACKSPACE) && !serverCode.empty()) {
+					serverCode.pop_back();
+				}
+
+				// Connect logic when Enter key is pressed
+				if (IsKeyPressed(KEY_ENTER)) {
+					if (!client) {
+						std::string server_ip = "127.0.0.1"; // Replace with actual IP in a LAN setting
+						client = new LANClient(io_context, server_ip, port, serverCode);
+						client->connect();
+
+						if (!io_thread.joinable()) {
+							io_thread = std::thread([&]() { io_context.run(); });
+						}
+					}
+				}
 			}
 
 			// Check if mouse is hovering the specific button
@@ -291,7 +344,7 @@ void menu() {
 			select();
 		}
 		EndDrawing();
-
+		
 	}
 	SetExitKey(KEY_APOSTROPHE);
 	EnableCursor();
