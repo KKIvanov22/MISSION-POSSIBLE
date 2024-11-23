@@ -10,7 +10,6 @@ struct Particle {
     int radius;
 };
 extern asio::io_context io_context; 
-extern LANServer* server;
 extern LANClient* client;
 
 void menu();

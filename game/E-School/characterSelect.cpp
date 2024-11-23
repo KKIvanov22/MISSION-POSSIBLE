@@ -1,5 +1,6 @@
 #include "characterSelect.h"
 #include "map.h"
+#include "server.h"
 
 void select()
 {
@@ -118,13 +119,15 @@ void select()
 		DrawTextureRec(boy, boyPos[int(i)], { 700, 425 }, WHITE);
 
 		// Check for button clicks and initialize map based on choice
-		if ((IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) && CheckCollisionPointRec(GetMousePosition(), choice[0]))
-		{
-			initMap(1);
-		}
-		if ((IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) && CheckCollisionPointRec(GetMousePosition(), choice[1]))
-		{
-			initMap(2);
+		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+			if (CheckCollisionPointRec(GetMousePosition(), choice[0])) {
+				sendDataToServer(1, 200, 475);
+				initMap(1);
+			}
+			if (CheckCollisionPointRec(GetMousePosition(), choice[1])) {
+				sendDataToServer(2, 200, 475);
+				initMap(2);
+			}
 		}
 
 		EndDrawing();

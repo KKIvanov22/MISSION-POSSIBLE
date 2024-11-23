@@ -5,7 +5,6 @@
 #include "gradeBook.h"
 
 asio::io_context io_context;
-LANServer* server = nullptr;
 LANClient* client = nullptr;
 std::thread io_thread;
 
@@ -204,29 +203,18 @@ void menu() {
 
 			DrawRectangleRounded(rulesButton, 10, 10, (CheckCollisionPointRec(mousePosition, rulesButton) ? PINK : LIGHTGRAY));
 			DrawText("Rules", screenWidth / 2 - 100, screenHeight / 2 + 62, 25, WHITE);
-			// Handle click with the mouse over button
-			if (CheckCollisionPointRec(GetMousePosition(), rulesButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-				if (!server) {
-					server = new LANServer(io_context, port);
-					server->start();
-					server_code = server->getServerCode();
-					std::cout << "Hosting server with code: " << server_code << std::endl;
-
-					io_thread = std::thread([&]() { io_context.run(); });
-				}
-			}
+				
 
 			// Open server code input box when pressing 'Connect'
-			if (IsKeyPressed(KEY_C)) {
+			if (CheckCollisionPointRec(GetMousePosition(), rulesButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 				showServerCodeInput = true;
 			}
 
-			// Draw server code input box if required
+			// Server code input
 			if (showServerCodeInput) {
 				DrawRectangleRec(serverCodeBox, LIGHTGRAY);
 				DrawText(serverCode.c_str(), serverCodeBox.x + 5, serverCodeBox.y + 15, 20, BLACK);
 
-				// Handle server code input
 				int key = GetCharPressed();
 				while (key > 0) {
 					if ((key >= 32) && (key <= 125) && (serverCode.length() < 4)) {
@@ -239,16 +227,14 @@ void menu() {
 					serverCode.pop_back();
 				}
 
-				// Connect logic when Enter key is pressed
-				if (IsKeyPressed(KEY_ENTER)) {
-					if (!client) {
-						std::string server_ip = "127.0.0.1"; // Replace with actual IP in a LAN setting
-						client = new LANClient(io_context, server_ip, port, serverCode);
-						client->connect();
+				// Try to connect once the user enters the code and presses Enter
+				if (IsKeyPressed(KEY_ENTER) && !client) {
+					std::string server_ip = "192.168.1.6"; // Replace with actual IP
+					client = new LANClient(io_context, server_ip, 12345, serverCode);
+					client->connect();
 
-						if (!io_thread.joinable()) {
-							io_thread = std::thread([&]() { io_context.run(); });
-						}
+					if (!io_thread.joinable()) {
+						io_thread = std::thread([&]() { io_context.run(); });
 					}
 				}
 			}
