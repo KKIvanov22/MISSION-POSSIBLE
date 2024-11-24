@@ -1,6 +1,7 @@
 #include "map.h"
 #include "rooms.h"
 #include "menu.h"
+#include "server.h"
 void initMap(int character)
 {
 	EndMode3D();
@@ -62,6 +63,8 @@ void initMap(int character)
 			studentY -= 3.0f;
 			student.y = studentY;
 			currentFrameGirl = 11 + (int)(GetTime() * 5) % 2; // Animation for walking forward
+			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY));
+
 		}
 
 		if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
@@ -69,6 +72,8 @@ void initMap(int character)
 			studentY += 3.0f;
 			student.y = studentY;
 			currentFrameGirl = 8 + (int)(GetTime() * 5) % 2; // Animation for walking back
+			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY));
+
 		}
 
 		if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
@@ -76,6 +81,8 @@ void initMap(int character)
 			studentX -= 3.0f;
 			student.x = studentX;
 			currentFrameGirl = 2 + (int)(GetTime() * 5) % 2; // Animation for walking left
+			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY));
+
 		}
 
 		if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
@@ -83,12 +90,29 @@ void initMap(int character)
 			studentX += 3.0f;
 			student.x = studentX;
 			currentFrameGirl = 4 + (int)(GetTime() * 5) % 2; // Animation for walking right
-		}
+			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY));
 
+		}
+		client->receiveData();
 
 		BeginDrawing();
 		ClearBackground(WHITE);
 		DrawTexture(map, 0, 0, WHITE);
+        {
+            std::lock_guard<std::mutex> lock(client->data_mutex);
+            for (const auto& [id, data] : client->client_data) {
+                int charSelected = static_cast<int>(data["character"]);
+                int xpos = static_cast<int>(data["xpos2D"]);
+                int ypos = static_cast<int>(data["ypos2D"]);
+                // Draw the character based on the selected character and position
+                if (charSelected == 1) {
+                    DrawTexture(studentFront, xpos, ypos, WHITE);
+                } else if (charSelected == 2) {
+                    DrawTexture(studentGirl, xpos, ypos, WHITE);
+                }
+                // Add more cases if there are more characters
+            }
+        }
 
 		if (IsKeyPressed(KEY_G))
 		{

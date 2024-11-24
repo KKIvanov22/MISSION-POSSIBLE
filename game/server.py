@@ -4,6 +4,8 @@ import json
 import random
 
 class LANServer:
+    index = 0  # Class attribute to keep track of client IDs
+
     def __init__(self, host='0.0.0.0', port=12345):
         self.host = host
         self.port = port
@@ -31,14 +33,20 @@ class LANServer:
         try:
             # Receive the code from the client
             client_code = client_socket.recv(1024).decode('utf-8').strip()
-            
             if client_code != self.access_code:
                 print(f"Incorrect access code from {address}, rejecting connection.")
                 client_socket.sendall("Incorrect access code. Connection rejected.\n".encode('utf-8'))
                 client_socket.close()
                 return
 
-            print(f"Access code verified for {address}. Connection established.")
+            # Assign a unique ID to the client
+            client_id = LANServer.index
+            LANServer.index += 1
+
+            # Send the client ID to the client
+            client_socket.sendall(f"Your client ID is: {client_id}\n".encode('utf-8'))
+
+            print(f"Access code verified for {address}. Connection established. Client ID: {client_id}")
             self.clients.append(client_socket)
 
             try:
@@ -53,12 +61,11 @@ class LANServer:
                         message = json.loads(data)
                         print(f"Processed JSON: {message}")
                         
-                        # Extract CharacterSelected, Xpos2D, Ypos2D from the message
-                        character_selected = message.get('CharacterSelected')
-                        xpos2d = message.get('Xpos2D')
-                        ypos2d = message.get('Ypos2D')
-                        
-                        print(f"CharacterSelected: {character_selected}, Xpos2D: {xpos2d}, Ypos2d: {ypos2d}")
+                        character_selected = message.get('selectedCharacter')
+                        xpos2d = message.get('xpos2D')
+                        ypos2d = message.get('ypos2D')
+                        id = message.get('id')
+                        print(f"CharacterSelected: {character_selected}, Xpos2D: {xpos2d}, Ypos2d: {ypos2d}, id: {id}")
                         
                         # Optionally broadcast the message
                         self.broadcast(data, client_socket)

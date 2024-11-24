@@ -15,5 +15,7 @@
 #include <cstring>
 #include <asio.hpp>
 #include <json.hpp>
+#include <map>
+#include <mutex>
 using namespace std;
 

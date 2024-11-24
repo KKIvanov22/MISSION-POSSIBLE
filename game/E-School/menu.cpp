@@ -229,7 +229,7 @@ void menu() {
 
 				// Try to connect once the user enters the code and presses Enter
 				if (IsKeyPressed(KEY_ENTER) && !client) {
-					std::string server_ip = "192.168.1.6"; // Replace with actual IP
+					std::string server_ip = "127.0.0.1"; // Replace with actual IP
 					client = new LANClient(io_context, server_ip, 12345, serverCode);
 					client->connect();
 

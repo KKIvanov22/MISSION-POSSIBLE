@@ -1,4 +1,5 @@
 #include "server.h"
+#include "menu.h"
 using asio::ip::tcp;
 using json = nlohmann::json;
 
@@ -18,36 +19,75 @@ LANClient::LANClient(asio::io_context& io_context, const std::string& server_ip,
 
 void LANClient::connect() {
     asio::error_code ec;
-    asio::write(socket_, asio::buffer(server_code_), ec);
+    asio::write(socket_, asio::buffer(server_code_ + '\n'), ec);
     if (!ec) {
         std::cout << "Sent server code: " << server_code_ << std::endl;
+
+        // Read the server's response
+        asio::streambuf buf;
+        asio::read_until(socket_, buf, '\n', ec);
+        if (!ec) {
+            std::istream is(&buf);
+            std::string response;
+            std::getline(is, response);
+            std::cout << "Server response: " << response << std::endl;
+
+            // Read the client ID from the server
+            asio::read_until(socket_, buf, '\n', ec);
+            if (!ec) {
+                std::getline(is, id);
+                std::cout << "Received client ID: " << id << std::endl;
+            }
+            else {
+                std::cerr << "Receive error: " << ec.message() << std::endl;
+            }
+        }
+        else {
+            std::cerr << "Receive error: " << ec.message() << std::endl;
+        }
     }
     else {
         std::cerr << "Send error: " << ec.message() << std::endl;
     }
 }
 
+void LANClient::receiveData() {
+    try {
+        asio::streambuf buf;
+        asio::error_code ec;
+        asio::read_until(socket_, buf, '\n', ec);
+        if (!ec) {
+            std::istream is(&buf);
+            std::string data;
+            std::getline(is, data);
+            std::cout << "Received data: " << data << std::endl;
+
+            // Parse the received JSON data
+            json receivedData = json::parse(data);
+            std::lock_guard<std::mutex> lock(data_mutex);
+            client_data = receivedData;
+        }
+        else {
+            std::cerr << "Receive error: " << ec.message() << std::endl;
+        }
+    }
+    catch (std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+}
+
 void sendDataToServer(int selectedCharacter, int xpos2D, int ypos2D) {
     try {
-        // Define the server IP and port
-        const std::string server_ip = "192.168.1.6"; // Replace with your server's IP
-        const int server_port = 12345;
-
-        // Create an asio context and socket
-        asio::io_context io_context;
-        tcp::socket socket(io_context);
-
-        // Connect to the server
-        tcp::endpoint endpoint(asio::ip::make_address(server_ip), server_port);
-        socket.connect(endpoint);
-
         // Construct the JSON object
-        std::string message = std::to_string(selectedCharacter) + "," +
-            std::to_string(xpos2D) + "," +
-            std::to_string(ypos2D);
-
+        nlohmann::json jsonMessage;
+        jsonMessage["selectedCharacter"] = selectedCharacter;
+        jsonMessage["xpos2D"] = xpos2D;
+        jsonMessage["ypos2D"] = ypos2D;
+        jsonMessage["id"] = client->id; 
+        std::string message = jsonMessage.dump();
+     
         // Send the serialized string
-        asio::write(socket, asio::buffer(message));
+        asio::write(client->socket_, asio::buffer(message + '\n'));
         std::cout << "Data sent to server: " << message << std::endl;
 
     }
