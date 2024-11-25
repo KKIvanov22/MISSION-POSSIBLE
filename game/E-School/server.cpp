@@ -53,27 +53,68 @@ void LANClient::connect() {
 
 void LANClient::receiveData() {
     try {
+        std::cout << "Waiting to receive data..." << std::endl;
         asio::streambuf buf;
         asio::error_code ec;
+
+        // Check available data
+        size_t available = socket_.available(ec);
+        if (ec) {
+            std::cerr << "Error checking availability: " << ec.message() << std::endl;
+            return;
+        }
+
+        std::cout << "Available bytes: " << available << std::endl;
+
+        // Read until newline
         asio::read_until(socket_, buf, '\n', ec);
         if (!ec) {
+            std::cout << "Data received." << std::endl;
             std::istream is(&buf);
             std::string data;
             std::getline(is, data);
-            std::cout << "Received data: " << data << std::endl;
+            std::cout << "Raw received data: " << data << std::endl;
 
-            // Parse the received JSON data
-            json receivedData = json::parse(data);
+            // Parse the received data
             std::lock_guard<std::mutex> lock(data_mutex);
-            client_data = receivedData;
-        }
-        else {
+            std::istringstream ss(data);
+            std::string line;
+            while (std::getline(ss, line)) {
+                std::istringstream lineStream(line);
+                std::string id, character, xpos2D, ypos2D;
+                if (std::getline(lineStream, id, ',') &&
+                    std::getline(lineStream, character, ',') &&
+                    std::getline(lineStream, xpos2D, ',') &&
+                    std::getline(lineStream, ypos2D, ',')) {
+                    
+                    bool exists = false;
+                    // Check if clientID already exists in the vector
+                    for (auto& client : client_data) {
+                        if (client.id != id) {
+                            // Update existing client data
+                            exists = true;
+                            break;
+                        }
+                    }
+
+                    if (exists) {
+                        // Add new client data
+                        ClientData client;
+                        client.id = id;
+                        client.character = std::stoi(character);
+                        client.xpos2D = std::stoi(xpos2D);
+                        client.ypos2D = std::stoi(ypos2D);
+                        client_data.push_back(client);
+                    }
+                }
+            }
+        } else {
             std::cerr << "Receive error: " << ec.message() << std::endl;
         }
-    }
-    catch (std::exception& e) {
+    } catch (std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
+    std::cout << "Function end." << std::endl;
 }
 
 void sendDataToServer(int selectedCharacter, int xpos2D, int ypos2D) {
@@ -83,9 +124,9 @@ void sendDataToServer(int selectedCharacter, int xpos2D, int ypos2D) {
         jsonMessage["selectedCharacter"] = selectedCharacter;
         jsonMessage["xpos2D"] = xpos2D;
         jsonMessage["ypos2D"] = ypos2D;
-        jsonMessage["id"] = client->id; 
+        jsonMessage["id"] = client->id;
         std::string message = jsonMessage.dump();
-     
+
         // Send the serialized string
         asio::write(client->socket_, asio::buffer(message + '\n'));
         std::cout << "Data sent to server: " << message << std::endl;

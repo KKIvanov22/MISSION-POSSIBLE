@@ -56,8 +56,11 @@ void initMap(int character)
 	float frameCounter = 0;
 	float frameTime = 0;
 	Rectangle currentFrameBoy;
+	float timeAccumulator = 0.0f;
 	while (!WindowShouldClose())
 	{
+		float deltaTime = GetFrameTime();
+		timeAccumulator += deltaTime;
 		if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
 		{
 			studentY -= 3.0f;
@@ -93,26 +96,28 @@ void initMap(int character)
 			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY));
 
 		}
-		client->receiveData();
+		if (timeAccumulator >= 0.5f)
+		{
+			client->receiveData();
+			timeAccumulator = 0.0f;
+		}
 
 		BeginDrawing();
 		ClearBackground(WHITE);
 		DrawTexture(map, 0, 0, WHITE);
-        {
-            std::lock_guard<std::mutex> lock(client->data_mutex);
-            for (const auto& [id, data] : client->client_data) {
-                int charSelected = static_cast<int>(data["character"]);
-                int xpos = static_cast<int>(data["xpos2D"]);
-                int ypos = static_cast<int>(data["ypos2D"]);
-                // Draw the character based on the selected character and position
-                if (charSelected == 1) {
-                    DrawTexture(studentFront, xpos, ypos, WHITE);
-                } else if (charSelected == 2) {
-                    DrawTexture(studentGirl, xpos, ypos, WHITE);
-                }
-                // Add more cases if there are more characters
-            }
-        }
+		{
+			for (size_t i = 0; i < client->client_data.size(); i++)
+			{
+				if (client->client_data[i].character == 1)
+				{
+					DrawTextureRec(studentGirl, spriteGirl[currentFrameGirl], { static_cast<float>(client->client_data[i].xpos2D), static_cast<float>(client->client_data[i].ypos2D) }, WHITE);
+				}
+				else if (client->client_data[i].character == 2)
+				{
+					DrawTextureRec(studentGirl, spriteGirl[currentFrameGirl], { static_cast<float>(client->client_data[i].xpos2D), static_cast<float>(client->client_data[i].ypos2D) }, WHITE);
+				}
+			}
+		}
 
 		if (IsKeyPressed(KEY_G))
 		{
