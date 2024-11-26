@@ -52,27 +52,19 @@ void LANClient::connect() {
 }
 
 void LANClient::receiveData() {
+    client_data.clear();
     try {
         std::cout << "Waiting to receive data..." << std::endl;
         asio::streambuf buf;
         asio::error_code ec;
 
-        // Check available data
-        size_t available = socket_.available(ec);
-        if (ec) {
-            std::cerr << "Error checking availability: " << ec.message() << std::endl;
-            return;
-        }
-
-        std::cout << "Available bytes: " << available << std::endl;
-
-        // Read until newline
-        asio::read_until(socket_, buf, '\n', ec);
+        // Read until "end" string
+        asio::read_until(socket_, buf, "end", ec);
         if (!ec) {
             std::cout << "Data received." << std::endl;
             std::istream is(&buf);
-            std::string data;
-            std::getline(is, data);
+            std::string data((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
+            data = data.substr(0, data.find("end")); // Remove the "end" string
             std::cout << "Raw received data: " << data << std::endl;
 
             // Parse the received data
@@ -86,25 +78,14 @@ void LANClient::receiveData() {
                     std::getline(lineStream, character, ',') &&
                     std::getline(lineStream, xpos2D, ',') &&
                     std::getline(lineStream, ypos2D, ',')) {
-                    
-                    bool exists = false;
-                    // Check if clientID already exists in the vector
-                    for (auto& client : client_data) {
-                        if (client.id != id) {
-                            // Update existing client data
-                            exists = true;
-                            break;
-                        }
-                    }
-
-                    if (exists) {
-                        // Add new client data
-                        ClientData client;
-                        client.id = id;
-                        client.character = std::stoi(character);
-                        client.xpos2D = std::stoi(xpos2D);
-                        client.ypos2D = std::stoi(ypos2D);
-                        client_data.push_back(client);
+                    if(id != client->id) 
+                    {
+                    ClientData client;
+                    client.id = id;
+                    client.character = std::stoi(character);
+                    client.xpos2D = std::stoi(xpos2D);
+                    client.ypos2D = std::stoi(ypos2D);
+                    client_data.push_back(client);
                     }
                 }
             }

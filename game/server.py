@@ -32,9 +32,9 @@ class LANServer:
                 message = f"{client_id},{data['character']},{data['xpos2D']},{data['ypos2D']}"
                 messages.append(message)
             
-            # Join all messages with a newline character
-            message = '\n'.join(messages) + '\n'
-
+            # Join all messages with a newline character and append "end"
+            message = '\n'.join(messages) + '\nend'
+            print(message)
             # Send data to all clients
             for client in self.clients:
                 try:
