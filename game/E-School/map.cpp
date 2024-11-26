@@ -66,7 +66,7 @@ void initMap(int character)
 			studentY -= 3.0f;
 			student.y = studentY;
 			currentFrameGirl = 11 + (int)(GetTime() * 5) % 2; // Animation for walking forward
-			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY));
+			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY),0);
 
 		}
 
@@ -75,7 +75,7 @@ void initMap(int character)
 			studentY += 3.0f;
 			student.y = studentY;
 			currentFrameGirl = 8 + (int)(GetTime() * 5) % 2; // Animation for walking back
-			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY));
+			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 0);
 
 		}
 
@@ -84,7 +84,7 @@ void initMap(int character)
 			studentX -= 3.0f;
 			student.x = studentX;
 			currentFrameGirl = 2 + (int)(GetTime() * 5) % 2; // Animation for walking left
-			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY));
+			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 0);
 
 		}
 
@@ -93,7 +93,7 @@ void initMap(int character)
 			studentX += 3.0f;
 			student.x = studentX;
 			currentFrameGirl = 4 + (int)(GetTime() * 5) % 2; // Animation for walking right
-			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY));
+			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 0);
 
 		}
 		if (timeAccumulator >= 0.5f)
@@ -244,10 +244,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				programming();
-				studentX = 435;
-				studentY = 700;
-				student.x = studentX;
-				student.y = studentY;
+				
 
 			}
 		}
@@ -258,10 +255,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				biology();
-				studentX = 435;
-				studentY = 700;
-				student.x = studentX;
-				student.y = studentY;
+				
 
 			}
 		}
@@ -272,10 +266,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				physics();
-				studentX = 435;
-				studentY = 700;
-				student.x = studentX;
-				student.y = studentY;
+				
 
 			}
 		}
@@ -286,10 +277,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				chemistry();
-				studentX = 435;
-				studentY = 700;
-				student.x = studentX;
-				student.y = studentY;
+				
 
 			}
 		}
@@ -300,10 +288,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				history();
-				studentX = 435;
-				studentY = 700;
-				student.x = studentX;
-				student.y = studentY;
+				
 
 			}
 		}
@@ -314,10 +299,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				english();
-				studentX = 435;
-				studentY = 700;
-				student.x = studentX;
-				student.y = studentY;
+				
 
 			}
 		}
@@ -328,10 +310,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				literature();
-				studentX = 435;
-				studentY = 700;
-				student.x = studentX;
-				student.y = studentY;
+				
 
 			}
 		}
@@ -341,12 +320,8 @@ void initMap(int character)
 			DrawText("Press ENTER to enter.", 435, 700, 30, BLACK);
 			if (IsKeyDown(KEY_ENTER))
 			{
+				sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 8);
 				maths();
-				studentX = 435;
-				studentY = 700;
-				student.x = studentX;
-				student.y = studentY;
-
 			}
 		}
 
@@ -356,10 +331,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				geography();
-				studentX = 435;
-				studentY = 700;
-				student.x = studentX;
-				student.y = studentY;
+				
 
 			}
 		}
@@ -370,10 +342,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				physyicaEducation();
-				studentX = 435;
-				studentY = 700;
-				student.x = studentX;
-				student.y = studentY;
+				
 
 			}
 		}

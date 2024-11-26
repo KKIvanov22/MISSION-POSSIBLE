@@ -26,10 +26,10 @@ class LANServer:
             if not self.clients:
                 return
 
-            # Prepare data in the format "id,characterSelected,xpos2D,ypos2D"
+            # Prepare data in the format "id,characterSelected,xpos2D,ypos2D,xpos3D,ypos3D,zpos3D,room"
             messages = []
             for client_id, data in self.client_data.items():
-                message = f"{client_id},{data['character']},{data['xpos2D']},{data['ypos2D']}"
+                message = f"{client_id},{data['character']},{data['xpos2D']},{data['ypos2D']},{data['xpos3D']},{data['ypos3D']},{data['zpos3D']},{data['room']}"
                 messages.append(message)
             
             # Join all messages with a newline character and append "end"
@@ -61,7 +61,7 @@ class LANServer:
             with self.lock:
                 client_id = LANServer.index
                 LANServer.index += 1
-                self.client_data[client_id] = {"character": None, "xpos2D": 0, "ypos2D": 0}
+                self.client_data[client_id] = {"character": None, "xpos2D": 0, "ypos2D": 0, "xpos3D": 8.0, "ypos3D": 2.0, "zpos3D": -7.0, "room": 0}
             
             # Send the client ID
             client_socket.sendall(f"{client_id}\n".encode('utf-8'))
@@ -84,15 +84,19 @@ class LANServer:
                         if id is not None:
                             id = int(id)
                             self.client_data[id] = {
-                                "character": 2,
+                                "character": message.get("selectedCharacter"),
                                 "xpos2D": message.get("xpos2D"),
                                 "ypos2D": message.get("ypos2D"),
+                                "xpos3D": message.get("xpos3D", 8.0),
+                                "ypos3D": message.get("ypos3D", 2.0),
+                                "zpos3D": message.get("zpos3D", -7.0),
+                                "room": message.get("room", 0),
                             }
                             print(f"Updated client {id} data: {self.client_data[id]}")
                         else:
-                                print("Client ID missing in message!")
+                            print("Client ID missing in message!")
                         for i in range (0,LANServer.index):
-                             print(f"Client ID 0 data: {json.dumps(self.client_data.get(i, {}), indent=4)}")
+                            print(f"Client ID {i} data: {json.dumps(self.client_data.get(i, {}), indent=4)}")
                 except json.JSONDecodeError:
                     print(f"Invalid JSON received from {address}: {data}")
         except Exception as e:
@@ -103,7 +107,7 @@ class LANServer:
                 del self.client_data[client_id]
             print(f"Client {client_id} disconnected.")
             client_socket.close()
-            
+
     def start_broadcast_loop(self):
         """Broadcast data to all clients periodically."""
         while True:

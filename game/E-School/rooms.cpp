@@ -3,6 +3,7 @@
 #include "exams.h"
 #include "map.h"
 #include "whiteboard.h"
+#include "server.h"
 
 void drawCoordinates(Camera& camera)
 {
@@ -350,6 +351,7 @@ void maths()
             }
             else {
                 seconds--;
+                sendDataToServer(2, 435,700,8,camera.position.x, camera.position.y, camera.position.z);
             }
 
             elapsedTime = 0.0f; // Reset elapsed time

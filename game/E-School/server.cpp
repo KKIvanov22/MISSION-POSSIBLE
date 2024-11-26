@@ -73,11 +73,15 @@ void LANClient::receiveData() {
             std::string line;
             while (std::getline(ss, line)) {
                 std::istringstream lineStream(line);
-                std::string id, character, xpos2D, ypos2D;
+                std::string id, character, xpos2D, ypos2D, xpos3D, ypos3D, zpos3D, room;
                 if (std::getline(lineStream, id, ',') &&
                     std::getline(lineStream, character, ',') &&
                     std::getline(lineStream, xpos2D, ',') &&
-                    std::getline(lineStream, ypos2D, ',')) {
+                    std::getline(lineStream, ypos2D, ',') &&
+                    std::getline(lineStream, xpos3D, ',') &&
+                    std::getline(lineStream, ypos3D, ',') &&
+                    std::getline(lineStream, zpos3D, ',') &&
+                    std::getline(lineStream, room, ',')) {
                     if(id != client->id) 
                     {
                     ClientData client;
@@ -85,6 +89,10 @@ void LANClient::receiveData() {
                     client.character = std::stoi(character);
                     client.xpos2D = std::stoi(xpos2D);
                     client.ypos2D = std::stoi(ypos2D);
+                    client.xpos3D = std::stof(xpos3D);
+                    client.ypos3D = std::stof(ypos3D);
+                    client.zpos3D = std::stof(zpos3D);
+                    client.room = std::stoi(room);
                     client_data.push_back(client);
                     }
                 }
@@ -98,13 +106,17 @@ void LANClient::receiveData() {
     std::cout << "Function end." << std::endl;
 }
 
-void sendDataToServer(int selectedCharacter, int xpos2D, int ypos2D) {
+void sendDataToServer(int selectedCharacter, int xpos2D, int ypos2D, int room, float xpos3D, float ypos3D, float zpos3D) {
     try {
         // Construct the JSON object
         nlohmann::json jsonMessage;
         jsonMessage["selectedCharacter"] = selectedCharacter;
         jsonMessage["xpos2D"] = xpos2D;
         jsonMessage["ypos2D"] = ypos2D;
+        jsonMessage["xpos3D"] = xpos3D;
+        jsonMessage["ypos3D"] = ypos3D;
+        jsonMessage["zpos3D"] = zpos3D;
+        jsonMessage["room"] = room;
         jsonMessage["id"] = client->id;
         std::string message = jsonMessage.dump();
 

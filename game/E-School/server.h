@@ -6,6 +6,10 @@ struct ClientData {
     std::string id;
     int xpos2D;
     int ypos2D;
+    float xpos3D;
+    float ypos3D;
+    float zpos3D;
+    int room; // New parameter
 };
 
 class LANClient {
@@ -21,4 +25,4 @@ public:
     std::mutex data_mutex; // Mutex to protect access to client data
 };
 
-void sendDataToServer(int selectedCharacter, int xpos2D, int ypos2D);
+void sendDataToServer(int selectedCharacter, int xpos2D, int ypos2D, int room, float xpos3D = 8.0, float ypos3D = 2.0, float zpos3D = -7.0);
