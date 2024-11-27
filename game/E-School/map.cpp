@@ -55,8 +55,8 @@ void initMap(int character)
 	int boyFrame = 0;
 	float frameCounter = 0;
 	float frameTime = 0;
-	Rectangle currentFrameBoy;
 	float timeAccumulator = 0.0f;
+	Rectangle currentFrameBoy;
 	while (!WindowShouldClose())
 	{
 		float deltaTime = GetFrameTime();
@@ -66,7 +66,7 @@ void initMap(int character)
 			studentY -= 3.0f;
 			student.y = studentY;
 			currentFrameGirl = 11 + (int)(GetTime() * 5) % 2; // Animation for walking forward
-			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY),0);
+			if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY),0);
 
 		}
 
@@ -75,7 +75,7 @@ void initMap(int character)
 			studentY += 3.0f;
 			student.y = studentY;
 			currentFrameGirl = 8 + (int)(GetTime() * 5) % 2; // Animation for walking back
-			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 0);
+			if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 0);
 
 		}
 
@@ -84,7 +84,7 @@ void initMap(int character)
 			studentX -= 3.0f;
 			student.x = studentX;
 			currentFrameGirl = 2 + (int)(GetTime() * 5) % 2; // Animation for walking left
-			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 0);
+			if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 0);
 
 		}
 
@@ -93,19 +93,19 @@ void initMap(int character)
 			studentX += 3.0f;
 			student.x = studentX;
 			currentFrameGirl = 4 + (int)(GetTime() * 5) % 2; // Animation for walking right
-			sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 0);
+			if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 0);
 
 		}
 		if (timeAccumulator >= 0.5f)
 		{
-			client->receiveData();
+			if (client != nullptr) client->receiveData();
 			timeAccumulator = 0.0f;
 		}
 
 		BeginDrawing();
 		ClearBackground(WHITE);
 		DrawTexture(map, 0, 0, WHITE);
-		{
+		if (client != nullptr) {
 			for (size_t i = 0; i < client->client_data.size(); i++)
 			{
 				if (client->client_data[i].character == 1)
@@ -244,7 +244,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				programming();
-				
+				if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 1);
 
 			}
 		}
@@ -255,7 +255,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				biology();
-				
+				if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 2);
 
 			}
 		}
@@ -266,7 +266,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				physics();
-				
+				if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 3);
 
 			}
 		}
@@ -277,7 +277,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				chemistry();
-				
+				if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 4);
 
 			}
 		}
@@ -288,7 +288,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				history();
-				
+				if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 5);
 
 			}
 		}
@@ -299,7 +299,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				english();
-				
+				if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 6);
 
 			}
 		}
@@ -310,7 +310,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				literature();
-				
+				if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 7);
 
 			}
 		}
@@ -320,7 +320,7 @@ void initMap(int character)
 			DrawText("Press ENTER to enter.", 435, 700, 30, BLACK);
 			if (IsKeyDown(KEY_ENTER))
 			{
-				sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 8);
+				if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 8);
 				maths();
 			}
 		}
@@ -331,7 +331,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				geography();
-				
+				if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 9);
 
 			}
 		}
@@ -342,7 +342,7 @@ void initMap(int character)
 			if (IsKeyDown(KEY_ENTER))
 			{
 				physyicaEducation();
-				
+				if (client != nullptr) sendDataToServer(character, static_cast<int>(studentX), static_cast<int>(studentY), 10);
 
 			}
 		}

@@ -1,6 +1,7 @@
 #include "characterSelect.h"
 #include "map.h"
 #include "server.h"
+#include "menu.h"
 
 void select()
 {
@@ -121,11 +122,11 @@ void select()
 		// Check for button clicks and initialize map based on choice
 		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 			if (CheckCollisionPointRec(GetMousePosition(), choice[0])) {
-				sendDataToServer(1, 200, 475,0);
+				if (client != nullptr) sendDataToServer(1, 200, 475,0);
 				initMap(1);
 			}
 			if (CheckCollisionPointRec(GetMousePosition(), choice[1])) {
-				sendDataToServer(2, 200, 475,0);
+				if (client != nullptr) sendDataToServer(2, 200, 475,0);
 				initMap(2);
 			}
 		}

@@ -1,25 +1,26 @@
-# MISSION-POSSIBLE## Prerequisites
-1. **Install Visual Studio 2022**:
-   - [Download Visual Studio 2022](https://visualstudio.microsoft.com/).
-   - During installation, select the **Desktop development with C++** workload.
+# MISSION-POSSIBLE
+## Предварителни изисквания
+1. **Инсталирайте Visual Studio 2022**:
+   - [Изтеглете Visual Studio 2022](https://visualstudio.microsoft.com/).
+   - По време на инсталацията изберете работния товар **Desktop development with C++**.
 
-2. **Install Python**:
-   - [Download Python](https://www.python.org/downloads/).
-   - Ensure you check **"Add Python to PATH"** during installation.
+2. **Инсталирайте Python**:
+   - [Изтеглете Python](https://www.python.org/downloads/).
+   - Уверете се, че сте отбелязали **"Add Python to PATH"** по време на инсталацията.
 
-## Steps to Run the Application
+## Стъпки за стартиране на приложението
 
-1. **Start the Python Server**:
-   - Navigate to the `game` folder.
-   - Run the following command in the terminal:
+1. **Стартирайте Python сървъра**:
+   - Навигирайте до папката `game`.
+   - Изпълнете следната команда в терминала:
      ```bash
      python server.py
      ```
 
-2. **Open and Run the Visual Studio Solution**:
-   - Open the `E-School.sln` file located in the `game` folder using Visual Studio 2022.
-   - Build and run the project:
-     1. Click on **Build** > **Build Solution**.
-     2. Press **F5** to start debugging.
+2. **Отворете и стартирайте Visual Studio решението**:
+   - Отворете файла `E-School.sln`, намиращ се в папката `game`, чрез Visual Studio 2022.
+   - Компилирайте и стартирайте проекта:
+     1. Натиснете **Build** > **Build Solution**.
+     2. Натиснете **F5**, за да започнете дебъгването.
 
-Your application should now be running successfully!
+Вашето приложение трябва да работи успешно!

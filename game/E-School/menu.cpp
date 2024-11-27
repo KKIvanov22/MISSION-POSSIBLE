@@ -76,7 +76,7 @@ void menu() {
 
 	std::string serverCode;
 	bool showServerCodeInput = false;
-	const Rectangle serverCodeBox = { (screenWidth / 2) - 100, (screenHeight / 2) - 50, 200, 50 };
+	const Rectangle serverCodeBox = { (screenWidth / 2) - 80, (screenHeight / 2) + 125, 200, 50 };
 
 	while (!WindowShouldClose())
 	{
@@ -84,7 +84,6 @@ void menu() {
 		ClearBackground(GRAY);
 		DrawTexture(logo, 500, 250, WHITE);
 		if (animationShown == 0)
-
 		{
 
 			DrawTexture(tubes, 10 + tubesX, 100 + tubesY, WHITE);
@@ -202,7 +201,7 @@ void menu() {
 			}
 
 			DrawRectangleRounded(rulesButton, 10, 10, (CheckCollisionPointRec(mousePosition, rulesButton) ? PINK : LIGHTGRAY));
-			DrawText("Rules", screenWidth / 2 - 100, screenHeight / 2 + 62, 25, WHITE);
+			DrawText("Connect", screenWidth / 2 - 100, screenHeight / 2 + 62, 25, WHITE);
 				
 
 			// Open server code input box when pressing 'Connect'
@@ -212,9 +211,8 @@ void menu() {
 
 			// Server code input
 			if (showServerCodeInput) {
-				DrawRectangleRec(serverCodeBox, LIGHTGRAY);
-				DrawText(serverCode.c_str(), serverCodeBox.x + 5, serverCodeBox.y + 15, 20, BLACK);
-
+				DrawRectangleRounded(serverCodeBox, 10, 10, LIGHTGRAY);
+				DrawText(serverCode.c_str(), serverCodeBox.x + 25, serverCodeBox.y + 15, 20, BLACK);
 				int key = GetCharPressed();
 				while (key > 0) {
 					if ((key >= 32) && (key <= 125) && (serverCode.length() < 4)) {
@@ -229,13 +227,15 @@ void menu() {
 
 				// Try to connect once the user enters the code and presses Enter
 				if (IsKeyPressed(KEY_ENTER) && !client) {
-					std::string server_ip = "127.0.0.1"; // Replace with actual IP
+					std::string server_ip = "127.0.0.1"; 
 					client = new LANClient(io_context, server_ip, 12345, serverCode);
 					client->connect();
 
 					if (!io_thread.joinable()) {
 						io_thread = std::thread([&]() { io_context.run(); });
 					}
+					showServerCodeInput = false;
+					serverCode.clear();
 				}
 			}
 

@@ -4,6 +4,16 @@
 #include "map.h"
 #include "whiteboard.h"
 #include "server.h"
+#include "menu.h"
+
+
+void drawClients3D(const std::vector<ClientData>& client_data, int room) {
+    for (const auto& client : client_data) {
+		if (client.room == room) {
+            DrawCylinder({ client.xpos3D, client.ypos3D-1.f, client.zpos3D }, 0.5f, 0.5f, 2.0f, 10, BLUE);
+		}
+    }
+}
 
 void drawCoordinates(Camera& camera)
 {
@@ -297,26 +307,36 @@ void maths()
 
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
-    float elapsedTime = 0.0f;
-    float updateInterval = 1.0f;
+    float frameCounter = 0;
+    float frameTime = 0;
+    float timeAccumulator = 0.0f;
 
-    int minutes = 1;
-    int seconds = 0;
-
-    bool timerIsZero = false;
     Vector3 previousCameraPosition = camera.position;
     // Main game loop
     Texture2D draw = { 0 };
     while (!WindowShouldClose())
     {
+        float deltaTime = GetFrameTime();
+        timeAccumulator += deltaTime;
+		if (timeAccumulator >= 0.2f)
+		{
+			timeAccumulator = 0.0f;
+			frameCounter++;
+            if (client != nullptr) client->receiveData();
+		}
         previousCameraPosition = camera.position;
         UpdateCamera(&camera, cameraMode);
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
-        if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_N))
+        if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
         {
             draw = whiteboard::whiteboard();
+        }
+        else if (IsKeyPressed(KEY_F))
+        {
+            EnableCursor();
+            mathsExaminationAlert();
         }
         BeginMode3D(camera);
         DrawBillboard(staticCamera, draw, { 0.0f, 3.5f, -9.0f }, 2.0f, WHITE);
@@ -336,41 +356,18 @@ void maths()
 
         drawFurnitures(chair, desk, deskChair, studentDesk, board, laptop, book, camera, previousCameraPosition);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
-        elapsedTime += GetFrameTime();
-
-        if (elapsedTime >= updateInterval) {
-            // Decrement the timer
-            if (seconds == 0) {
-                if (minutes == 0)
-                {
-                    timerIsZero = true;
-                }
-                minutes--;
-                seconds = 30;
-
-            }
-            else {
-                seconds--;
-                sendDataToServer(2, 435,700,8,camera.position.x, camera.position.y, camera.position.z);
-            }
-
-            elapsedTime = 0.0f; // Reset elapsed time
+        if (client != nullptr) drawClients3D(client->client_data,8);
+        if(IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D) || IsKeyPressed(KEY_W))
+        {
+            if (client != nullptr) sendDataToServer(2, 435, 700, 8, camera.position.x, camera.position.y, camera.position.z);
         }
         EndMode3D();
         drawCoordinates(camera);
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
-        if (timerIsZero)
-        {
-            EnableCursor();
-            mathsExaminationAlert();
-        }
+        
         if (IsKeyPressed(KEY_M))
         {
-
             break;
         }
-
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
 
         EndDrawing();
 
@@ -423,23 +420,31 @@ void history()
     cameraBox.max.y += 0.5f;
     cameraBox.max.z += 0.5f;
 
-    float elapsedTime = 0.0f;
-    float updateInterval = 1.0f;
-
-    int minutes = 1;
-    int seconds = 0;
-
-    bool timerIsZero = false;
 
     // Generates some random columns
     DisableCursor();                    // Limit cursor to relative movement inside the window
-
+    float frameCounter = 0;
+    float frameTime = 0;
+    float timeAccumulator = 0.0f;
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
+    Texture2D draw = { 0 };
 
     // Main game loop
     while (!WindowShouldClose())
     {
+        float deltaTime = GetFrameTime();
+        timeAccumulator += deltaTime;
+        if (timeAccumulator >= 0.2f)
+        {
+            timeAccumulator = 0.0f;
+            frameCounter++;
+            if (client != nullptr) client->receiveData();
+        }
+        if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D) || IsKeyPressed(KEY_W))
+        {
+            if (client != nullptr) sendDataToServer(2, 435, 700, 5, camera.position.x, camera.position.y, camera.position.z);
+        }
         Vector3 previousCameraPosition = camera.position;
         UpdateCamera(&camera, cameraMode);
         BeginDrawing();
@@ -448,6 +453,15 @@ void history()
 
         BeginMode3D(camera);
 
+        if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
+        {
+            draw = whiteboard::whiteboard();
+        }
+        else if (IsKeyPressed(KEY_F))
+        {
+            EnableCursor();
+            historyExaminationAlert();
+        }
         cameraBox.min = camera.position;
         cameraBox.max = camera.position;
 
@@ -461,40 +475,15 @@ void history()
         drawFurnitures(chair, desk, deskChair, studentDesk, board, laptop, book, camera, previousCameraPosition);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
         DrawModel(musket, { 0.0f,3.0f,8.5f }, 0.03f, BROWN);
+        if (client != nullptr) drawClients3D(client->client_data, 5);
 
-        elapsedTime += GetFrameTime();
-
-        if (elapsedTime >= updateInterval) {
-            // Decrement the timer
-            if (seconds == 0) {
-                if (minutes == 0)
-                {
-                    timerIsZero = true;
-                }
-                minutes--;
-                seconds = 30;
-
-            }
-            else {
-                seconds--;
-            }
-
-            elapsedTime = 0.0f; // Reset elapsed time
-        }
 
         EndMode3D();
 
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
 
-        if (timerIsZero)
-        {
-            EnableCursor();
-            historyExaminationAlert();
-            timerIsZero = 0;
-        }
+        
 
         EndMode3D();
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
 
         EndDrawing();
         if (IsKeyPressed(KEY_M))
@@ -549,22 +538,31 @@ void physics()
     cameraBox.max.y += 0.5f;
     cameraBox.max.z += 0.5f;
 
-    float elapsedTime = 0.0f;
-    float updateInterval = 1.0f;
-
-    int minutes = 1;
-    int seconds = 0;
-
-    bool timerIsZero = false;
+    
     // Generates some random columns
     DisableCursor();                    // Limit cursor to relative movement inside the window
-
+    float frameCounter = 0;
+    float frameTime = 0;
+    float timeAccumulator = 0.0f;
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
+    Texture2D draw = { 0 };
 
     // Main game loop
     while (!WindowShouldClose())
     {
+        float deltaTime = GetFrameTime();
+        timeAccumulator += deltaTime;
+        if (timeAccumulator >= 0.2f)
+        {
+            timeAccumulator = 0.0f;
+            frameCounter++;
+            if (client != nullptr) client->receiveData();
+        }
+        if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D) || IsKeyPressed(KEY_W))
+        {
+            if (client != nullptr) sendDataToServer(2, 435, 700, 3, camera.position.x, camera.position.y, camera.position.z);
+        }
         Vector3 previousCameraPosition = camera.position;
         UpdateCamera(&camera, cameraMode);
         BeginDrawing();
@@ -572,7 +570,15 @@ void physics()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
-
+        if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
+        {
+            draw = whiteboard::whiteboard();
+        }
+        else if (IsKeyPressed(KEY_F))
+        {
+            EnableCursor();
+            physicsExaminationAlert();
+        }
         cameraBox.min = camera.position;
         cameraBox.max = camera.position;
 
@@ -584,38 +590,16 @@ void physics()
         DrawCube({ 0.0f, 6.7f, 0.0f }, 21.0f, 0.2f, 21.0f, LIGHTGRAY);
         drawFurnitures(chair, desk, deskChair, studentDesk, board, laptop, book, camera, previousCameraPosition);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
+        if (client != nullptr) drawClients3D(client->client_data, 3);
 
         EndMode3D();
         if (IsKeyPressed(KEY_M))
         {
             break;
         }
-        elapsedTime += GetFrameTime();
-
-        if (elapsedTime >= updateInterval) {
-            // Decrement the timer
-            if (seconds == 0) {
-                if (minutes == 0)
-                {
-                    timerIsZero = true;
-                }
-                minutes--;
-                seconds = 30;
-
-            }
-            else {
-                seconds--;
-            }
-
-            elapsedTime = 0.0f; // Reset elapsed time
-        }
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
+        
         EndDrawing();
-        if (timerIsZero)
-        {
-            physicsExaminationAlert();
-            EnableCursor();
-        }
+        
     }
 
 
@@ -668,23 +652,31 @@ void literature()
     cameraBox.max.y += 0.5f;
     cameraBox.max.z += 0.5f;
 
-    float elapsedTime = 0.0f;
-    float updateInterval = 1.0f;
-
-    int minutes = 1;
-    int seconds = 0;
-
-    bool timerIsZero = false;
 
     // Generates some random columns
     DisableCursor();                    // Limit cursor to relative movement inside the window
-
+    float frameCounter = 0;
+    float frameTime = 0;
+    float timeAccumulator = 0.0f;
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
+    Texture2D draw = { 0 };
 
     // Main game loop
     while (!WindowShouldClose())
     {
+        float deltaTime = GetFrameTime();
+        timeAccumulator += deltaTime;
+        if (timeAccumulator >= 0.2f)
+        {
+            timeAccumulator = 0.0f;
+            frameCounter++;
+            if (client != nullptr) client->receiveData();
+        }
+        if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D) || IsKeyPressed(KEY_W))
+        {
+            if (client != nullptr) sendDataToServer(2, 435, 700, 7, camera.position.x, camera.position.y, camera.position.z);
+        }
         Vector3 previousCameraPosition = camera.position;
         UpdateCamera(&camera, cameraMode);
         BeginDrawing();
@@ -692,7 +684,15 @@ void literature()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
-
+        if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
+        {
+            draw = whiteboard::whiteboard();
+        }
+        else if (IsKeyPressed(KEY_F))
+        {
+            EnableCursor();
+            literatureExaminationAlert();
+        }
         cameraBox.min = camera.position;
         cameraBox.max = camera.position;
 
@@ -709,45 +709,20 @@ void literature()
 
 
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
-        elapsedTime += GetFrameTime();
+        if (client != nullptr) drawClients3D(client->client_data, 7);
 
-        if (elapsedTime >= updateInterval) {
-            // Decrement the timer
-            if (seconds == 0) {
-                if (minutes == 0)
-                {
-                    timerIsZero = true;
-                }
-                minutes--;
-                seconds = 30;
-
-            }
-            else {
-                seconds--;
-            }
-
-            elapsedTime = 0.0f; // Reset elapsed time
-        }
 
         EndMode3D();
 
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
-
-        if (timerIsZero)
-        {
-            EnableCursor();
-            literatureExaminationAlert();
-        }
+        
 
         EndMode3D();
 
         if (IsKeyPressed(KEY_M))
         {
-
             break;
         }
 
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
 
         EndDrawing();
 
@@ -759,6 +734,7 @@ void literature()
 }
 void chemistry()
 {
+
     Model chair = LoadModel("objects/chair.obj");
     Model desk = LoadModel("objects/desk.obj");
     Model deskChair = LoadModel("objects/deskChair.obj");
@@ -800,23 +776,31 @@ void chemistry()
     cameraBox.max.y += 0.5f;
     cameraBox.max.z += 0.5f;
 
-    float elapsedTime = 0.0f;
-    float updateInterval = 1.0f;
-
-    int minutes = 1;
-    int seconds = 0;
-
-    bool timerIsZero = false;
 
     // Generates some random columns
     DisableCursor();                    // Limit cursor to relative movement inside the window
-
+    float frameCounter = 0;
+    float frameTime = 0;
+    float timeAccumulator = 0.0f;
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
+    Texture2D draw = { 0 };
 
     // Main game loop
     while (!WindowShouldClose())
     {
+        float deltaTime = GetFrameTime();
+        timeAccumulator += deltaTime;
+        if (timeAccumulator >= 0.2f)
+        {
+            timeAccumulator = 0.0f;
+            frameCounter++;
+            if (client != nullptr) client->receiveData();
+        }
+        if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D) || IsKeyPressed(KEY_W))
+        {
+            if (client != nullptr) sendDataToServer(2, 435, 700, 4, camera.position.x, camera.position.y, camera.position.z);
+        }
         Vector3 previousCameraPosition = camera.position;
         UpdateCamera(&camera, cameraMode);
         BeginDrawing();
@@ -824,7 +808,15 @@ void chemistry()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
-
+        if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
+        {
+            draw = whiteboard::whiteboard();
+        }
+        else if (IsKeyPressed(KEY_F))
+        {
+            EnableCursor();
+            chemistryExaminationAlert();
+        }
         cameraBox.min = camera.position;
         cameraBox.max = camera.position;
 
@@ -838,40 +830,16 @@ void chemistry()
         drawFurnitures(chair, desk, deskChair, studentDesk, board, laptop, book, camera, previousCameraPosition);
         drawTubes(tubes);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
-        elapsedTime += GetFrameTime();
-
-        if (elapsedTime >= updateInterval) {
-            // Decrement the timer
-            if (seconds == 0) {
-                if (minutes == 0)
-                {
-                    timerIsZero = true;
-                }
-                minutes--;
-                seconds = 30;
-
-            }
-            else {
-                seconds--;
-            }
-
-            elapsedTime = 0.0f; // Reset elapsed time
-        }
+        if (client != nullptr) drawClients3D(client->client_data, 4);
 
         EndMode3D();
-        if (timerIsZero)
-        {
-            EnableCursor();
-            chemistryExaminationAlert();
-        }
+        
 
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
         if (IsKeyPressed(KEY_M))
         {
             break;
         }
 
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
 
         EndDrawing();
 
@@ -925,22 +893,31 @@ void english()
 
     // Generates some random columns
     DisableCursor();                    // Limit cursor to relative movement inside the window
-
+    float frameCounter = 0;
+    float frameTime = 0;
+    float timeAccumulator = 0.0f;
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Main game loop
-    float elapsedTime = 0.0f;
-    float updateInterval = 1.0f;
-
-    int minutes = 1;
-    int seconds = 0;
-
-    bool timerIsZero = false;
+    
+    Texture2D draw = { 0 };
 
     // Main game loop
     while (!WindowShouldClose())
     {
+        float deltaTime = GetFrameTime();
+        timeAccumulator += deltaTime;
+        if (timeAccumulator >= 0.2f)
+        {
+            timeAccumulator = 0.0f;
+            frameCounter++;
+            if (client != nullptr) client->receiveData();
+        }
+        if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D) || IsKeyPressed(KEY_W))
+        {
+            if (client != nullptr) sendDataToServer(2, 435, 700, 6, camera.position.x, camera.position.y, camera.position.z);
+        }
         Vector3 previousCameraPosition = camera.position;
         UpdateCamera(&camera, cameraMode);
         BeginDrawing();
@@ -948,7 +925,15 @@ void english()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
-
+        if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
+        {
+            draw = whiteboard::whiteboard();
+        }
+        else if (IsKeyPressed(KEY_F))
+        {
+            EnableCursor();
+            englishExaminationAlert();
+        }
         cameraBox.min = camera.position;
         cameraBox.max = camera.position;
 
@@ -961,39 +946,18 @@ void english()
 
         drawFurnitures(chair, desk, deskChair, studentDesk, board, laptop, book, camera, previousCameraPosition);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
-        elapsedTime += GetFrameTime();
+        
+        if (client != nullptr) drawClients3D(client->client_data, 6);
 
-        if (elapsedTime >= updateInterval) {
-            // Decrement the timer
-            if (seconds == 0) {
-                if (minutes == 0)
-                {
-                    timerIsZero = true;
-                }
-                minutes--;
-                seconds = 30;
 
-            }
-            else {
-                seconds--;
-            }
-
-            elapsedTime = 0.0f; // Reset elapsed time
-        }
         EndMode3D();
         drawCoordinates(camera);
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
-        if (timerIsZero)
-        {
-            EnableCursor();
-            englishExaminationAlert();
-        }
+        
         if (IsKeyPressed(KEY_M))
         {
             break;
         }
 
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
 
         EndDrawing();
 
@@ -1042,30 +1006,46 @@ void biology()
     cameraBox.max.y += 0.5f;
     cameraBox.max.z += 0.5f;
 
-    float elapsedTime = 0.0f;
-    float updateInterval = 1.0f;
-
-    int minutes = 1;
-    int seconds = 0;
-
-    bool timerIsZero = false;
 
     // Generates some random columns
     DisableCursor();                    // Limit cursor to relative movement inside the window
-
+    float frameCounter = 0;
+    float frameTime = 0;
+    float timeAccumulator = 0.0f;
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
+    Texture2D draw = { 0 };
 
     // Main game loop
     while (!WindowShouldClose())
     {
+        float deltaTime = GetFrameTime();
+        timeAccumulator += deltaTime;
+        if (timeAccumulator >= 0.2f)
+        {
+            timeAccumulator = 0.0f;
+            frameCounter++;
+            if (client != nullptr) client->receiveData();
+        }
+        if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D) || IsKeyPressed(KEY_W))
+        {
+            if (client != nullptr) sendDataToServer(2, 435, 700, 2, camera.position.x, camera.position.y, camera.position.z);
+        }
         Vector3 previousCameraPosition = camera.position;
 
         UpdateCamera(&camera, cameraMode);
         BeginDrawing();
         ClearBackground(RAYWHITE);
         BeginMode3D(camera);
-
+        if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
+        {
+            draw = whiteboard::whiteboard();
+        }
+        else if (IsKeyPressed(KEY_F))
+        {
+            EnableCursor();
+            biologyExaminationAlert();
+        }
         cameraBox.min = camera.position;
         cameraBox.max = camera.position;
 
@@ -1080,33 +1060,13 @@ void biology()
         drawFurnitures(chair, desk, deskChair, studentDesk, board, laptop, book, camera, previousCameraPosition);
         DrawModel(skeleton, { 5.0f, 2.2f, -9.0f }, 0.01, WHITE);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
-        elapsedTime += GetFrameTime();
+        
+        if (client != nullptr) drawClients3D(client->client_data, 2);
 
-        if (elapsedTime >= updateInterval) {
-            // Decrement the timer
-            if (seconds == 0) {
-                if (minutes == 0)
-                {
-                    timerIsZero = true;
-                }
-                minutes--;
-                seconds = 30;
 
-            }
-            else {
-                seconds--;
-            }
-
-            elapsedTime = 0.0f; // Reset elapsed time
-        }
         EndMode3D();
         drawCoordinates(camera);
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
-        if (timerIsZero)
-        {
-            EnableCursor();
-            biologyExaminationAlert();
-        }
+        
         if (IsKeyPressed(KEY_M))
         {
             break;
@@ -1162,23 +1122,32 @@ void geography()
     cameraBox.max.y += 0.5f;
     cameraBox.max.z += 0.5f;
 
-    float elapsedTime = 0.0f;
-    float updateInterval = 1.0f;
-
-    int minutes = 1;
-    int seconds = 0;
-
-    bool timerIsZero = false;
+    
 
     // Generates some random columns
     DisableCursor();                    // Limit cursor to relative movement inside the window
 
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
-
+    Texture2D draw = { 0 };
+    float frameCounter = 0;
+    float frameTime = 0;
+    float timeAccumulator = 0.0f;
     // Main game loop
     while (!WindowShouldClose())
     {
+        float deltaTime = GetFrameTime();
+        timeAccumulator += deltaTime;
+        if (timeAccumulator >= 0.2f)
+        {
+            timeAccumulator = 0.0f;
+            frameCounter++;
+            if (client != nullptr) client->receiveData();
+        }
+        if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D) || IsKeyPressed(KEY_W))
+        {
+            if (client != nullptr) sendDataToServer(2, 435, 700, 9, camera.position.x, camera.position.y, camera.position.z);
+        }
         Vector3 previousCameraPosition = camera.position;
         UpdateCamera(&camera, cameraMode);
         BeginDrawing();
@@ -1186,7 +1155,15 @@ void geography()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
-
+        if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
+        {
+            draw = whiteboard::whiteboard();
+        }
+        else if (IsKeyPressed(KEY_F))
+        {
+            EnableCursor();
+            geographyExaminationAlert();
+        }
         cameraBox.min = camera.position;
         cameraBox.max = camera.position;
 
@@ -1202,45 +1179,17 @@ void geography()
         DrawModel(globe, { 0.65f,1.65f,-7.0f }, 0.4, GOLD);
 
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
-
-        elapsedTime += GetFrameTime();
-
-        if (elapsedTime >= updateInterval) {
-            // Decrement the timer
-            if (seconds == 0) {
-                if (minutes == 0)
-                {
-                    timerIsZero = true;
-                }
-                minutes--;
-                seconds = 30;
-
-            }
-            else {
-                seconds--;
-            }
-
-            elapsedTime = 0.0f; // Reset elapsed time
-        }
+        if (client != nullptr) drawClients3D(client->client_data, 9);
 
 
         EndMode3D();
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
 
-        EndMode3D();
-
-        if (timerIsZero)
-        {
-            EnableCursor();
-            geographyExaminationAlert();
-        }
-
+      
         if (IsKeyPressed(KEY_M))
         {
             break;
         }
 
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
 
         EndDrawing();
 
@@ -1289,21 +1238,28 @@ void programming()
 
     // Generates some random columns
     DisableCursor();                    // Limit cursor to relative movement inside the window
-
-    float elapsedTime = 0.0f;
-    float updateInterval = 1.0f;
-
-    int minutes = 1;
-    int seconds = 0;
-
-    bool timerIsZero = false;
-
+    float frameCounter = 0;
+    float frameTime = 0;
+    float timeAccumulator = 0.0f;
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
+    Texture2D draw = { 0 };
 
     // Main game loop
     while (!WindowShouldClose())
     {
+        float deltaTime = GetFrameTime();
+        timeAccumulator += deltaTime;
+        if (timeAccumulator >= 0.2f)
+        {
+            timeAccumulator = 0.0f;
+            frameCounter++;
+            if (client != nullptr) client->receiveData();
+        }
+        if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D) || IsKeyPressed(KEY_W))
+        {
+            if (client != nullptr) sendDataToServer(2, 435, 700, 1, camera.position.x, camera.position.y, camera.position.z);
+        }
         Vector3 previousCameraPosition = camera.position;
         UpdateCamera(&camera, cameraMode);
         BeginDrawing();
@@ -1311,7 +1267,15 @@ void programming()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
-
+        if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
+        {
+            draw = whiteboard::whiteboard();
+        }
+        else if (IsKeyPressed(KEY_F))
+        {
+            EnableCursor();
+            programmingExaminationAlert();
+        }
         cameraBox.min = camera.position;
         cameraBox.max = camera.position;
 
@@ -1325,41 +1289,16 @@ void programming()
         drawFurnituresProgramming(desk, deskChair, chair, chairOther, workstation, computer, computerRotated, camera, previousCameraPosition);
         DrawBoundingBox(wallBox, RED);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
+        if (client != nullptr) drawClients3D(client->client_data, 10);
 
         EndMode3D();
         prgTextBook(camera, 0);
-        elapsedTime += GetFrameTime();
 
-        if (elapsedTime >= updateInterval) {
-            // Decrement the timer
-            if (seconds == 0) {
-                if (minutes == 0)
-                {
-                    timerIsZero = true;
-                }
-                minutes--;
-                seconds = 30;
-
-            }
-            else {
-                seconds--;
-            }
-
-            elapsedTime = 0.0f; // Reset elapsed time
-        }
-        if (timerIsZero)
-        {
-            EnableCursor();
-            programmingExaminationAlert();
-        }
-
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
         if (IsKeyPressed(KEY_M))
         {
             break;
         }
 
-        DrawText(TextFormat("%02d:%02d", minutes, seconds), 930, 40, 50, RED);
 
         EndDrawing();
 
@@ -1416,9 +1355,24 @@ void physyicaEducation()
     //--------------------------------------------------------------------------------------
     float potentialKickX = 0.0f;
     float potentialKickY = 0.0f;
+    float frameCounter = 0;
+    float frameTime = 0;
+    float timeAccumulator = 0.0f;
     // Main game loop
     while (!WindowShouldClose())
     {
+        float deltaTime = GetFrameTime();
+        timeAccumulator += deltaTime;
+        if (timeAccumulator >= 0.2f)
+        {
+            timeAccumulator = 0.0f;
+            frameCounter++;
+            if (client != nullptr) client->receiveData();
+        }
+        if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D) || IsKeyPressed(KEY_W))
+        {
+           if(client != nullptr) sendDataToServer(2, 435, 700, 10, camera.position.x, camera.position.y, camera.position.z);
+        }
         ballBox.min = { ballPosition.x - 0.3f, ballPosition.y ,ballPosition.z - 0.1f };
         ballBox.max = { ballPosition.x + 0.4f , ballPosition.y + 0.7f ,ballPosition.z + 0.4f };
         Vector3 previousCameraPosition = camera.position;
@@ -1459,6 +1413,8 @@ void physyicaEducation()
             footballPoints += 1;
             ballPosition = { 10.0f, 0.5f, 0.0f };
         }
+        if (client != nullptr) drawClients3D(client->client_data, 10);
+
         EndMode3D();
         drawCoordinates(camera);
         std::string pointsStr = "Points: " + std::to_string(footballPoints);
