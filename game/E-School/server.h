@@ -23,6 +23,8 @@ public:
     std::string id;
     std::vector<ClientData> client_data; // Vector to store client data
     std::mutex data_mutex; // Mutex to protect access to client data
+    Texture2D girl;
+    Texture2D boy;
 };
 
 void sendDataToServer(int selectedCharacter, int xpos2D, int ypos2D, int room, float xpos3D = 8.0, float ypos3D = 2.0, float zpos3D = -7.0);

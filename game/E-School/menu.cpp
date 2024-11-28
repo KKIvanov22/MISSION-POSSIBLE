@@ -234,6 +234,8 @@ void menu() {
 					if (!io_thread.joinable()) {
 						io_thread = std::thread([&]() { io_context.run(); });
 					}
+					client->girl = LoadTexture("textures/girlBilboard.png");
+					client->boy = LoadTexture("textures/studentFrontMenu.png");
 					showServerCodeInput = false;
 					serverCode.clear();
 				}

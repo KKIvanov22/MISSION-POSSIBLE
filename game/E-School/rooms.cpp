@@ -8,15 +8,20 @@
 
 
 void drawClients3D(const std::vector<ClientData>& client_data, int room,Camera camera) {
-    Texture2D* temp = new Texture2D;
-    *temp = LoadTexture("textures/girlBilboard.png");
-    for (const auto& client : client_data) {
-		if (client.room == room) {
-            //DrawCylinder({ client.xpos3D, client.ypos3D-1.f, client.zpos3D }, 0.5f, 0.5f, 2.0f, 10, BLUE);
-            DrawBillboard(camera, *temp, { client.xpos3D, 1.f, client.zpos3D }, 3.f, GRAY);
+    
+    for (const auto& clientC : client_data) {
+		if (clientC.room == room) {
+            if (clientC.character == 2)
+            {
+                DrawBillboard(camera, client->girl, { clientC.xpos3D, 1.f, clientC.zpos3D }, 3.f, GRAY);
+            }
+            else if (clientC.character == 1)
+            {
+                DrawBillboard(camera, client->boy, { clientC.xpos3D, 1.f, clientC.zpos3D }, 3.f, GRAY);
+            }
 		}
+       
     }
-    delete temp;
 }
 
 void drawCoordinates(Camera& camera)
@@ -287,7 +292,7 @@ void maths()
 
     int cameraMode = CAMERA_FIRST_PERSON;
     Camera staticCamera = { 0 };
-    staticCamera.fovy = 5.0f;
+    staticCamera.fovy = 60.0f;
     staticCamera.position = { 0.261261,2,-2.52176 };
     staticCamera.projection = 0;
     staticCamera.target = { 0.529181,2.7501,-10.0623 };
@@ -409,6 +414,12 @@ void history()
     camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
 
     int cameraMode = CAMERA_FIRST_PERSON;
+    Camera staticCamera = { 0 };
+    staticCamera.fovy = 5.0f;
+    staticCamera.position = { 0.261261,2,-2.52176 };
+    staticCamera.projection = 0;
+    staticCamera.target = { 0.529181,2.7501,-10.0623 };
+    staticCamera.up = { 0,1,0 };
 
     BoundingBox wallBox;
     wallBox.min = { -9.0f, 0.0f, -9.0f };
@@ -456,6 +467,7 @@ void history()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
+        DrawBillboard(staticCamera, draw, { 0.0f, 3.5f, -9.0f }, 2.0f, WHITE);
 
         if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
         {
@@ -527,7 +539,12 @@ void physics()
     camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
 
     int cameraMode = CAMERA_FIRST_PERSON;
-
+    Camera staticCamera = { 0 };
+    staticCamera.fovy = 5.0f;
+    staticCamera.position = { 0.261261,2,-2.52176 };
+    staticCamera.projection = 0;
+    staticCamera.target = { 0.529181,2.7501,-10.0623 };
+    staticCamera.up = { 0,1,0 };
     BoundingBox wallBox;
     wallBox.min = { -9.0f, 0.0f, -9.0f };
     wallBox.max = { 9.3f, 20.0f, 9.0f };
@@ -574,6 +591,8 @@ void physics()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
+        DrawBillboard(staticCamera, draw, { 0.0f, 3.5f, -9.0f }, 2.0f, WHITE);
+
         if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
         {
             draw = whiteboard::whiteboard();
@@ -641,7 +660,12 @@ void literature()
     camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
 
     int cameraMode = CAMERA_FIRST_PERSON;
-
+    Camera staticCamera = { 0 };
+    staticCamera.fovy = 5.0f;
+    staticCamera.position = { 0.261261,2,-2.52176 };
+    staticCamera.projection = 0;
+    staticCamera.target = { 0.529181,2.7501,-10.0623 };
+    staticCamera.up = { 0,1,0 };
     BoundingBox wallBox;
     wallBox.min = { -9.0f, 0.0f, -9.0f };
     wallBox.max = { 9.3f, 20.0f, 9.0f };
@@ -688,6 +712,8 @@ void literature()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
+        DrawBillboard(staticCamera, draw, { 0.0f, 3.5f, -9.0f }, 2.0f, WHITE);
+
         if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
         {
             draw = whiteboard::whiteboard();
@@ -765,7 +791,12 @@ void chemistry()
     camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
 
     int cameraMode = CAMERA_FIRST_PERSON;
-
+    Camera staticCamera = { 0 };
+    staticCamera.fovy = 5.0f;
+    staticCamera.position = { 0.261261,2,-2.52176 };
+    staticCamera.projection = 0;
+    staticCamera.target = { 0.529181,2.7501,-10.0623 };
+    staticCamera.up = { 0,1,0 };
     BoundingBox wallBox;
     wallBox.min = { -9.0f, 0.0f, -9.0f };
     wallBox.max = { 9.3f, 20.0f, 9.0f };
@@ -812,6 +843,8 @@ void chemistry()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
+        DrawBillboard(staticCamera, draw, { 0.0f, 3.5f, -9.0f }, 2.0f, WHITE);
+
         if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
         {
             draw = whiteboard::whiteboard();
@@ -880,7 +913,12 @@ void english()
     camera.projection = CAMERA_PERSPECTIVE;
 
     int cameraMode = CAMERA_FIRST_PERSON;
-
+    Camera staticCamera = { 0 };
+    staticCamera.fovy = 5.0f;
+    staticCamera.position = { 0.261261,2,-2.52176 };
+    staticCamera.projection = 0;
+    staticCamera.target = { 0.529181,2.7501,-10.0623 };
+    staticCamera.up = { 0,1,0 };
     BoundingBox wallBox;
     wallBox.min = { -9.0f, 0.0f, -9.0f };
     wallBox.max = { 9.3f, 20.0f, 9.0f };
@@ -929,6 +967,8 @@ void english()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
+        DrawBillboard(staticCamera, draw, { 0.0f, 3.5f, -9.0f }, 2.0f, WHITE);
+
         if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
         {
             draw = whiteboard::whiteboard();
@@ -995,7 +1035,12 @@ void biology()
     camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
 
     int cameraMode = CAMERA_FIRST_PERSON;
-
+    Camera staticCamera = { 0 };
+    staticCamera.fovy = 5.0f;
+    staticCamera.position = { 0.261261,2,-2.52176 };
+    staticCamera.projection = 0;
+    staticCamera.target = { 0.529181,2.7501,-10.0623 };
+    staticCamera.up = { 0,1,0 };
     BoundingBox wallBox;
     wallBox.min = { -9.0f, 0.0f, -9.0f };
     wallBox.max = { 9.3f, 20.0f, 9.3f };
@@ -1041,6 +1086,8 @@ void biology()
         BeginDrawing();
         ClearBackground(RAYWHITE);
         BeginMode3D(camera);
+        DrawBillboard(staticCamera, draw, { 0.0f, 3.5f, -9.0f }, 2.0f, WHITE);
+
         if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
         {
             draw = whiteboard::whiteboard();
@@ -1111,7 +1158,12 @@ void geography()
     camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
 
     int cameraMode = CAMERA_FIRST_PERSON;
-
+    Camera staticCamera = { 0 };
+    staticCamera.fovy = 5.0f;
+    staticCamera.position = { 0.261261,2,-2.52176 };
+    staticCamera.projection = 0;
+    staticCamera.target = { 0.529181,2.7501,-10.0623 };
+    staticCamera.up = { 0,1,0 };
     BoundingBox wallBox;
     wallBox.min = { -9.0f, 0.0f, -9.0f };
     wallBox.max = { 9.3f, 20.0f, 9.0f };
@@ -1159,6 +1211,8 @@ void geography()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
+        DrawBillboard(staticCamera, draw, { 0.0f, 3.5f, -9.0f }, 2.0f, WHITE);
+
         if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
         {
             draw = whiteboard::whiteboard();
@@ -1225,7 +1279,13 @@ void programming()
     camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
 
     int cameraMode = CAMERA_FIRST_PERSON;
-
+    Camera staticCamera = { 0 };
+    staticCamera.fovy = 5.0f;
+    staticCamera.position = { 14.6,2,0.3 };
+    Vector3 a;
+    staticCamera.projection = 0;
+    staticCamera.target = { 66,9.9,-1.7 };
+    staticCamera.up = { 0,1,0 };
     BoundingBox wallBox;
     wallBox.min = { -7.0f, 0.0f, -9.0f };
     wallBox.max = { 22.0f, 20.0f, 10.5f };
@@ -1264,6 +1324,10 @@ void programming()
         {
             if (client != nullptr) sendDataToServer(2, 435, 700, 1, camera.position.x, camera.position.y, camera.position.z);
         }
+        if (IsKeyPressed(KEY_B))
+        {
+            cout << camera.fovy << endl << camera.position.x << "," << camera.position.y << "," << camera.position.z << endl << camera.projection << endl << camera.target.x << "," << camera.target.y << "," << camera.target.z << endl << camera.up.x << "," << camera.up.y << "," << camera.up.z << endl;
+        }
         Vector3 previousCameraPosition = camera.position;
         UpdateCamera(&camera, cameraMode);
         BeginDrawing();
@@ -1271,7 +1335,9 @@ void programming()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
-        if (distanceCalc(camera.position, { 0.0f,0.2f,-7.0f }) <= 5.f && IsKeyPressed(KEY_F))
+        DrawBillboard(staticCamera, draw, { 21.0,2,0.2 }, 3.0f, WHITE);
+
+        if (distanceCalc(camera.position, { 21.0,2,0.2 }) <= 5.f && IsKeyPressed(KEY_F))
         {
             draw = whiteboard::whiteboard();
         }

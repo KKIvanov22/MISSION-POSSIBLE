@@ -1,10 +1,9 @@
-﻿#include "exams.h"
-#include "textbooks.h"
+﻿#include "textbooks.h"
 #include "rooms.h"
 #include "map.h"
 #include "menu.h"
 #include "accessData.h"
-
+#include "exams.h"
 
 #define MAXQUESTIONS 20
 #define MAXOPTIONS 4
@@ -14,8 +13,6 @@ struct Question {
     vector<string> options; // Array of options
     int correctOption;
 };
-
-
 
 int CheckMouseClickOnOption(int optionIndex, int mouseY) {
     Rectangle answers[4] = {
@@ -259,7 +256,6 @@ void mathsExam()
             DataAccess accessData;
             int grade = gradeSystem(score);
             accessData.addGrade(subject, to_string(grade));
-            maths();
             break;
         }
         SetExitKey(KEY_APOSTROPHE);
@@ -268,6 +264,7 @@ void mathsExam()
 }
 void mathsExaminationAlert()
 {
+    EndMode3D();
     Camera camera = { 0 };
     Texture2D background = LoadTexture("../images/examAlertBackground.png");
     const Rectangle reviseButton = { GetScreenWidth() / 2 - 150, GetScreenHeight() / 2 - 30, 140, 80 };
@@ -287,6 +284,7 @@ void mathsExaminationAlert()
         // Handle click with the mouse over button
         if (isMouseOverButtonRevise && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             mathsTextBook(camera, 1);
+            break;
         }
         bool isMouseOverButtonStart = CheckCollisionPointRec(mousePosition, goToExamButton);
         // Set new colors for hovering the button and draw text
@@ -295,10 +293,7 @@ void mathsExaminationAlert()
         // Handle click with the mouse over button
         if (isMouseOverButtonStart && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             mathsExam();
-            if (IsKeyPressed(KEY_M))
-            {
-                initMap(character);
-            }
+            break;
         }
 
         EndDrawing();
@@ -510,7 +505,6 @@ void englishExam()
             DataAccess accessData;
             int grade = gradeSystem(score);
             accessData.addGrade(subject, to_string(grade));
-            english();
             break;
         }
         SetExitKey(KEY_APOSTROPHE);
@@ -519,6 +513,7 @@ void englishExam()
 }
 
 void englishExaminationAlert() {
+    EndMode3D();
     Camera camera = { 0 };
     Texture2D background = LoadTexture("../images/examAlertBackground.png");
     const Rectangle reviseButton = { GetScreenWidth() / 2 - 150, GetScreenHeight() / 2 - 30, 140, 80 };
@@ -539,6 +534,7 @@ void englishExaminationAlert() {
         // Handle click with the mouse over button
         if (isMouseOverButtonRevise && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             englishTextBook(camera, 1);
+            break;
         }
         bool isMouseOverButtonStart = CheckCollisionPointRec(mousePosition, goToExamButton);
         // Set new colors for hovering the button and draw text
@@ -548,7 +544,7 @@ void englishExaminationAlert() {
         if (isMouseOverButtonStart && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
             englishExam();
-
+            break;
         }
 
         EndDrawing();
@@ -759,7 +755,6 @@ void historyExam()
             DataAccess accessData;
             int grade = gradeSystem(score);
             accessData.addGrade(subject, to_string(grade));
-            history();
             break;
         }
         SetExitKey(KEY_APOSTROPHE);
@@ -768,6 +763,7 @@ void historyExam()
 }
 
 void historyExaminationAlert() {
+    EndMode3D();
     Camera camera = { 0 };
     Texture2D background = LoadTexture("../images/examAlertBackground.png");
     const Rectangle reviseButton = { GetScreenWidth() / 2 - 150, GetScreenHeight() / 2 - 30, 140, 80 };
@@ -787,6 +783,7 @@ void historyExaminationAlert() {
         // Handle click with the mouse over button
         if (isMouseOverButtonRevise && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             historyTextBook(camera, 1);
+            break;
         }
         bool isMouseOverButtonStart = CheckCollisionPointRec(mousePosition, goToExamButton);
         // Set new colors for hovering the button and draw text
@@ -796,7 +793,7 @@ void historyExaminationAlert() {
         if (isMouseOverButtonStart && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
             historyExam();
-
+            break;
         }
 
         EndDrawing();
@@ -1006,7 +1003,6 @@ void literatureExam()
             DataAccess accessData;
             int grade = gradeSystem(score);
             accessData.addGrade(subject, to_string(grade));
-            literature();
             break;
         }
         SetExitKey(KEY_APOSTROPHE);
@@ -1015,6 +1011,7 @@ void literatureExam()
 }
 
 void literatureExaminationAlert() {
+    EndMode3D();
     Camera camera = { 0 };
     Texture2D background = LoadTexture("../images/examAlertBackground.png");
     const Rectangle reviseButton = { GetScreenWidth() / 2 - 150, GetScreenHeight() / 2 - 30, 140, 80 };
@@ -1035,6 +1032,7 @@ void literatureExaminationAlert() {
         // Handle click with the mouse over button
         if (isMouseOverButtonRevise && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             literatureTextBook(camera, 1);
+            break;
         }
         bool isMouseOverButtonStart = CheckCollisionPointRec(mousePosition, goToExamButton);
         // Set new colors for hovering the button and draw text
@@ -1044,7 +1042,7 @@ void literatureExaminationAlert() {
         if (isMouseOverButtonStart && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
             literatureExam();
-
+            break;
         }
 
         EndDrawing();
@@ -1252,7 +1250,6 @@ void biologyExam()
             DataAccess accessData;
             int grade = gradeSystem(score);
             accessData.addGrade(subject, to_string(grade));
-            biology();
             break;
         }
         SetExitKey(KEY_APOSTROPHE);
@@ -1261,6 +1258,7 @@ void biologyExam()
 }
 
 void biologyExaminationAlert() {
+    EndMode3D();
     Camera camera = { 0 };
     Texture2D background = LoadTexture("../images/examAlertBackground.png");
     const Rectangle reviseButton = { GetScreenWidth() / 2 - 150, GetScreenHeight() / 2 - 30, 140, 80 };
@@ -1280,6 +1278,7 @@ void biologyExaminationAlert() {
         // Handle click with the mouse over button
         if (isMouseOverButtonRevise && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             bioTextBook(camera, 1);
+            break;
         }
         bool isMouseOverButtonStart = CheckCollisionPointRec(mousePosition, goToExamButton);
         // Set new colors for hovering the button and draw text
@@ -1289,7 +1288,7 @@ void biologyExaminationAlert() {
         if (isMouseOverButtonStart && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
             biologyExam();
-
+            break;
         }
 
         EndDrawing();
@@ -1299,6 +1298,7 @@ void biologyExaminationAlert() {
 
 void geographyExam()
 {
+    EndMode3D();
     Texture2D background = LoadTexture("textures/geographyExam.png");
 
     Question questions[MAXQUESTIONS] = {
@@ -1500,7 +1500,6 @@ void geographyExam()
             DataAccess accessData;
             int grade = gradeSystem(score);
             accessData.addGrade(subject, to_string(grade));
-            geography();
             break;
         }
         SetExitKey(KEY_APOSTROPHE);
@@ -1509,6 +1508,7 @@ void geographyExam()
 }
 
 void geographyExaminationAlert() {
+    EndMode3D();
     Camera camera = { 0 };
     Texture2D background = LoadTexture("../images/examAlertBackground.png");
     const Rectangle reviseButton = { GetScreenWidth() / 2 - 150, GetScreenHeight() / 2 - 30, 140, 80 };
@@ -1529,6 +1529,7 @@ void geographyExaminationAlert() {
         // Handle click with the mouse over button
         if (isMouseOverButtonRevise && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             geographyTextBook(camera, 1);
+            break;
         }
         bool isMouseOverButtonStart = CheckCollisionPointRec(mousePosition, goToExamButton);
         // Set new colors for hovering the button and draw text
@@ -1538,6 +1539,7 @@ void geographyExaminationAlert() {
         if (isMouseOverButtonStart && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
             geographyExam();
+            break;
         }
 
         EndDrawing();
@@ -1747,7 +1749,6 @@ void programmingExam()
             DataAccess accessData;
             int grade = gradeSystem(score);
             accessData.addGrade(subject, to_string(grade));
-            programming();
             break;
         }
         SetExitKey(KEY_APOSTROPHE);
@@ -1756,6 +1757,7 @@ void programmingExam()
 }
 
 void programmingExaminationAlert() {
+	EndMode3D();
     Camera camera = { 0 };
     Texture2D background = LoadTexture("../images/examAlertBackground.png");
     const Rectangle reviseButton = { GetScreenWidth() / 2 - 150, GetScreenHeight() / 2 - 30, 140, 80 };
@@ -1776,6 +1778,7 @@ void programmingExaminationAlert() {
         // Handle click with the mouse over button
         if (isMouseOverButtonRevise && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             prgTextBook(camera, 1);
+            break;
         }
         bool isMouseOverButtonStart = CheckCollisionPointRec(mousePosition, goToExamButton);
         // Set new colors for hovering the button and draw text
@@ -1785,6 +1788,7 @@ void programmingExaminationAlert() {
         if (isMouseOverButtonStart && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
             programmingExam();
+            break;
         }
 
         EndDrawing();
@@ -1995,7 +1999,6 @@ void chemistryExam()
             DataAccess accessData;
             int grade = gradeSystem(score);
             accessData.addGrade(subject, to_string(grade));
-            chemistry();
             break;
         }
         SetExitKey(KEY_APOSTROPHE);
@@ -2004,6 +2007,8 @@ void chemistryExam()
 }
 
 void chemistryExaminationAlert() {
+    EndMode3D();
+
     Camera camera = { 0 };
     Texture2D background = LoadTexture("../images/examAlertBackground.png");
     const Rectangle reviseButton = { GetScreenWidth() / 2 - 150, GetScreenHeight() / 2 - 30, 140, 80 };
@@ -2023,6 +2028,7 @@ void chemistryExaminationAlert() {
         // Handle click with the mouse over button
         if (isMouseOverButtonRevise && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             chemistryTextBook(camera, 1);
+            break;
         }
         bool isMouseOverButtonStart = CheckCollisionPointRec(mousePosition, goToExamButton);
         // Set new colors for hovering the button and draw text
@@ -2032,6 +2038,7 @@ void chemistryExaminationAlert() {
         if (isMouseOverButtonStart && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
             chemistryExam();
+            break;
         }
 
         EndDrawing();
@@ -2241,7 +2248,6 @@ void physicsExam()
             DataAccess accessData;
             int grade = gradeSystem(score);
             accessData.addGrade(subject, to_string(grade));
-            physics();
             break;
         }
         SetExitKey(KEY_APOSTROPHE);
@@ -2250,6 +2256,8 @@ void physicsExam()
 }
 
 void physicsExaminationAlert() {
+    EndMode3D();
+
     Camera camera = { 0 };
     Texture2D background = LoadTexture("../images/examAlertBackground.png");
     const Rectangle reviseButton = { GetScreenWidth() / 2 - 150, GetScreenHeight() / 2 - 30, 140, 80 };
@@ -2268,6 +2276,7 @@ void physicsExaminationAlert() {
         // Handle click with the mouse over button
         if (isMouseOverButtonRevise && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             physicsTextBook(camera, 1);
+            break;
         }
         bool isMouseOverButtonStart = CheckCollisionPointRec(mousePosition, goToExamButton);
         // Set new colors for hovering the button and draw text
@@ -2277,11 +2286,10 @@ void physicsExaminationAlert() {
         if (isMouseOverButtonStart && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
             physicsExam();
+            break;
         }
 
         EndDrawing();
     }
 
 }
-
-
