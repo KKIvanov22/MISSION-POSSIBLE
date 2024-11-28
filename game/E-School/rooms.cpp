@@ -7,12 +7,16 @@
 #include "menu.h"
 
 
-void drawClients3D(const std::vector<ClientData>& client_data, int room) {
+void drawClients3D(const std::vector<ClientData>& client_data, int room,Camera camera) {
+    Texture2D* temp = new Texture2D;
+    *temp = LoadTexture("textures/girlBilboard.png");
     for (const auto& client : client_data) {
 		if (client.room == room) {
-            DrawCylinder({ client.xpos3D, client.ypos3D-1.f, client.zpos3D }, 0.5f, 0.5f, 2.0f, 10, BLUE);
+            //DrawCylinder({ client.xpos3D, client.ypos3D-1.f, client.zpos3D }, 0.5f, 0.5f, 2.0f, 10, BLUE);
+            DrawBillboard(camera, *temp, { client.xpos3D, 1.f, client.zpos3D }, 3.f, GRAY);
 		}
     }
+    delete temp;
 }
 
 void drawCoordinates(Camera& camera)
@@ -356,7 +360,7 @@ void maths()
 
         drawFurnitures(chair, desk, deskChair, studentDesk, board, laptop, book, camera, previousCameraPosition);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
-        if (client != nullptr) drawClients3D(client->client_data,8);
+        if (client != nullptr) drawClients3D(client->client_data,8,camera);
         if(IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D) || IsKeyPressed(KEY_W))
         {
             if (client != nullptr) sendDataToServer(2, 435, 700, 8, camera.position.x, camera.position.y, camera.position.z);
@@ -475,7 +479,7 @@ void history()
         drawFurnitures(chair, desk, deskChair, studentDesk, board, laptop, book, camera, previousCameraPosition);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
         DrawModel(musket, { 0.0f,3.0f,8.5f }, 0.03f, BROWN);
-        if (client != nullptr) drawClients3D(client->client_data, 5);
+        if (client != nullptr) drawClients3D(client->client_data, 5,camera);
 
 
         EndMode3D();
@@ -590,7 +594,7 @@ void physics()
         DrawCube({ 0.0f, 6.7f, 0.0f }, 21.0f, 0.2f, 21.0f, LIGHTGRAY);
         drawFurnitures(chair, desk, deskChair, studentDesk, board, laptop, book, camera, previousCameraPosition);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
-        if (client != nullptr) drawClients3D(client->client_data, 3);
+        if (client != nullptr) drawClients3D(client->client_data, 3,camera);
 
         EndMode3D();
         if (IsKeyPressed(KEY_M))
@@ -709,7 +713,7 @@ void literature()
 
 
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
-        if (client != nullptr) drawClients3D(client->client_data, 7);
+        if (client != nullptr) drawClients3D(client->client_data, 7,camera);
 
 
         EndMode3D();
@@ -830,7 +834,7 @@ void chemistry()
         drawFurnitures(chair, desk, deskChair, studentDesk, board, laptop, book, camera, previousCameraPosition);
         drawTubes(tubes);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
-        if (client != nullptr) drawClients3D(client->client_data, 4);
+        if (client != nullptr) drawClients3D(client->client_data, 4,camera);
 
         EndMode3D();
         
@@ -947,7 +951,7 @@ void english()
         drawFurnitures(chair, desk, deskChair, studentDesk, board, laptop, book, camera, previousCameraPosition);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
         
-        if (client != nullptr) drawClients3D(client->client_data, 6);
+        if (client != nullptr) drawClients3D(client->client_data, 6,camera);
 
 
         EndMode3D();
@@ -1061,7 +1065,7 @@ void biology()
         DrawModel(skeleton, { 5.0f, 2.2f, -9.0f }, 0.01, WHITE);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
         
-        if (client != nullptr) drawClients3D(client->client_data, 2);
+        if (client != nullptr) drawClients3D(client->client_data, 2,camera);
 
 
         EndMode3D();
@@ -1179,7 +1183,7 @@ void geography()
         DrawModel(globe, { 0.65f,1.65f,-7.0f }, 0.4, GOLD);
 
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
-        if (client != nullptr) drawClients3D(client->client_data, 9);
+        if (client != nullptr) drawClients3D(client->client_data, 9,camera);
 
 
         EndMode3D();
@@ -1289,7 +1293,7 @@ void programming()
         drawFurnituresProgramming(desk, deskChair, chair, chairOther, workstation, computer, computerRotated, camera, previousCameraPosition);
         DrawBoundingBox(wallBox, RED);
         collisions(camera, previousCameraPosition, cameraBox, wallBox);
-        if (client != nullptr) drawClients3D(client->client_data, 10);
+        if (client != nullptr) drawClients3D(client->client_data, 10,camera);
 
         EndMode3D();
         prgTextBook(camera, 0);
@@ -1413,7 +1417,7 @@ void physyicaEducation()
             footballPoints += 1;
             ballPosition = { 10.0f, 0.5f, 0.0f };
         }
-        if (client != nullptr) drawClients3D(client->client_data, 10);
+        if (client != nullptr) drawClients3D(client->client_data, 10,camera);
 
         EndMode3D();
         drawCoordinates(camera);
